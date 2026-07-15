@@ -15,10 +15,10 @@ public class AddressValidationService {
                     "Address cannot be empty");
         }
 
-        if (address.length() < 8) {
+        if (address.trim().length() < 3) {
             return new AddressValidationResponse(
                     false,
-                    "Invalid address");
+                    "Address is too short");
         }
 
         return new AddressValidationResponse(

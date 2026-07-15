@@ -29,23 +29,31 @@ function AddProperty() {
     const saveProperty = async (e) => {
 
         e.preventDefault();
-
+    
+        console.log("Token:", localStorage.getItem("token"));
+        console.log("Property:", property);
+    
         try {
-
-            await api.post("/properties", property);
-
+    
+            const response = await api.post("/properties", property);
+    
+            console.log("Success:", response.data);
+    
             alert("Property Added Successfully");
-
+    
             navigate("/properties");
-
+    
         } catch (err) {
-
+    
             console.log(err);
-
+    
+            console.log("Status:", err.response?.status);
+            console.log("Response:", err.response?.data);
+    
             alert("Unable to Add Property");
-
+    
         }
-
+    
     };
 
     return (
