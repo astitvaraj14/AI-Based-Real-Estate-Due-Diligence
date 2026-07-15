@@ -1,6 +1,8 @@
 package com.realestate.due_diligence_agent.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -58,5 +60,16 @@ public class PropertyService {
 
     public List<Property> getPropertiesByPrice(Double minPrice, Double maxPrice) {
         return propertyRepository.findByPriceBetween(minPrice, maxPrice);
+    }
+
+    public Map<String, Long> getPropertyTypeStats() {
+
+        List<Property> properties = propertyRepository.findAll();
+
+        return properties.stream()
+                .collect(Collectors.groupingBy(
+                        Property::getPropertyType,
+                        Collectors.counting()
+                ));
     }
 }

@@ -51,4 +51,5 @@ public class PropertyController {
 
         return propertyService.getPropertiesByPrice(min, max);
     }
+
 }
