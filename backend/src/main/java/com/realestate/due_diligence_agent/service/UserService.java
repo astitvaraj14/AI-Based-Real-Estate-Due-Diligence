@@ -3,6 +3,7 @@ package com.realestate.due_diligence_agent.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.realestate.due_diligence_agent.dto.AuthResponse;
 import com.realestate.due_diligence_agent.dto.LoginRequest;
 import com.realestate.due_diligence_agent.dto.RegisterRequest;
 import com.realestate.due_diligence_agent.entity.User;
@@ -41,7 +42,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public String login(LoginRequest request) {
+    public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -50,6 +51,12 @@ public class UserService {
             throw new RuntimeException("Invalid password");
         }
 
-        return jwtService.generateToken(user.getEmail());
+        String token = jwtService.generateToken(user.getEmail());
+
+        return new AuthResponse(
+                token,
+                user.getEmail(),
+                user.getRole().name()
+        );
     }
 }

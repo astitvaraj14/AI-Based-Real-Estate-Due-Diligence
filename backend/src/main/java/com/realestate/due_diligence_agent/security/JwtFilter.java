@@ -52,10 +52,16 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
 
+            System.out.println("========== JWT FILTER ==========");
+
             String email = jwtService.extractEmail(token);
+
+            System.out.println("Extracted Email: " + email);
 
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found"));
+
+            System.out.println("User Found: " + user.getEmail());
 
             List<GrantedAuthority> authorities = List.of(
                     new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
@@ -73,7 +79,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
+            System.out.println("Authentication Set Successfully");
+
         } catch (Exception e) {
+
+            e.printStackTrace();
+
             SecurityContextHolder.clearContext();
         }
 
