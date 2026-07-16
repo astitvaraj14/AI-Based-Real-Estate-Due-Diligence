@@ -81,19 +81,19 @@ function Login() {
 
         <p className="text-[#C96B5B] text-sm mb-2">
 
-          Sign in
+          Create Your Account
 
         </p>
 
         <h1 className="font-serif text-[42px]">
 
-          Welcome back
+         Create Account
 
         </h1>
 
         <p className="text-gray-500 mt-2 mb-8">
 
-          Access your due diligence workspace
+         Create your due diligence account
 
         </p>
 
@@ -181,7 +181,7 @@ function Login() {
 
           >
 
-            {loading ? "Signing In..." : "SIGN IN TO WORKSPACE"}
+            {loading ? "Signing In..." : "CREATE ACCOUNT"}
 
           </button>
 
