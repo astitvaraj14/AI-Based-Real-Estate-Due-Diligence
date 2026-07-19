@@ -21,10 +21,12 @@ function Register() {
   });
 
   const handleChange = (e) => {
+
     setUser({
       ...user,
       [e.target.name]: e.target.value
     });
+
   };
 
   const register = async (e) => {
@@ -33,7 +35,9 @@ function Register() {
 
     try {
 
-      await api.post("/auth/register", user);
+      const response = await api.post("/auth/register", user);
+
+      console.log(response.data);
 
       alert("Registration Successful");
 
@@ -41,9 +45,21 @@ function Register() {
 
     } catch (err) {
 
-      console.log(err);
+      console.error(err);
 
-      alert("Registration Failed");
+      if (err.response?.status === 400) {
+
+        alert("Invalid registration details.");
+
+      } else if (err.response?.status === 409) {
+
+        alert("Email already exists.");
+
+      } else {
+
+        alert("Registration Failed. Please try again.");
+
+      }
 
     }
 
@@ -112,6 +128,7 @@ function Register() {
                 className="w-full p-4 outline-none"
                 placeholder="Full Name"
                 name="fullName"
+                value={user.fullName}
                 onChange={handleChange}
               />
 
@@ -124,11 +141,12 @@ function Register() {
               <input
                 className="w-full p-4 outline-none"
                 placeholder="Email"
+                type="email"
                 name="email"
+                value={user.email}
                 onChange={handleChange}
               />
-
-            </div>
+                          </div>
 
             <div className="flex items-center border border-slate-300 rounded-xl px-4">
 
@@ -139,6 +157,7 @@ function Register() {
                 className="w-full p-4 outline-none"
                 placeholder="Password"
                 name="password"
+                value={user.password}
                 onChange={handleChange}
               />
 
@@ -151,6 +170,7 @@ function Register() {
               <select
                 className="w-full p-4 outline-none bg-white"
                 name="role"
+                value={user.role}
                 onChange={handleChange}
               >
 
@@ -158,7 +178,9 @@ function Register() {
                 <option value="AGENT">Agent</option>
                 <option value="ADMIN">Admin</option>
                 <option value="LEGAL_REVIEWER">Legal Reviewer</option>
-                <option value="FINANCIAL_INSTITUTION">Financial Institution</option>
+                <option value="FINANCIAL_INSTITUTION">
+                  Financial Institution
+                </option>
 
               </select>
 

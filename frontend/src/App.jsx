@@ -4,29 +4,34 @@ import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 
 import Dashboard from "./pages/Dashboard";
-import Properties from "./pages/Properties";
+import PropertySearch from "./pages/PropertySearch";
 import AddProperty from "./pages/AddProperty";
 import AddressValidation from "./pages/AddressValidation";
-
-import ProtectedRoute from "./components/ProtectedRoute";
-import PropertySearch from "./pages/PropertySearch";
 import Reports from "./pages/Reports";
 import Comparables from "./pages/Comparables";
 import RiskMonitoring from "./pages/RiskMonitoring";
 import AuditLog from "./pages/AuditLog";
 
+import ProtectedRoute from "./components/ProtectedRoute";
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+
         {/* Public Routes */}
 
         
         <Route path="/" element={<Dashboard />} />
+
         <Route path="/property-search" element={<PropertySearch />} />
+
         <Route path="/reports" element={<Reports />} />
+
         <Route path="/comparables" element={<Comparables />} />
+
         <Route path="/risk-monitoring" element={<RiskMonitoring />} />
+
       <Route path="/audit-log" element={<AuditLog />} />
 
         {/* Protected Routes */}
@@ -41,10 +46,10 @@ function App() {
         />
 
         <Route
-          path="/properties"
+          path="/property-search"
           element={
             <ProtectedRoute>
-              <Properties />
+              <PropertySearch />
             </ProtectedRoute>
           }
         />
@@ -66,10 +71,43 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
-  path="/test"
-  element={<h1 style={{ color: "red", fontSize: "50px" }}>TEST PAGE</h1>}
-/>
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <Reports />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/comparables"
+          element={
+            <ProtectedRoute>
+              <Comparables />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/risk-monitoring"
+          element={
+            <ProtectedRoute>
+              <RiskMonitoring />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/audit-log"
+          element={
+            <ProtectedRoute>
+              <AuditLog />
+            </ProtectedRoute>
+          }
+        />
+
       </Routes>
     </BrowserRouter>
   );
