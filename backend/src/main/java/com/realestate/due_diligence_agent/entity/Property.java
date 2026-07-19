@@ -1,9 +1,13 @@
 package com.realestate.due_diligence_agent.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -30,12 +34,32 @@ public class Property {
 
     private String ownerName;
 
+    // Relationship with User
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    // Verification Details
+    private String verificationStatus;
+
+    private Double verificationScore;
+
+    private LocalDate registrationDate;
+
+    private LocalDate verificationDate;
+
     public Property() {
     }
 
     public Property(Long id, String title, String address, String city,
             String state, String propertyType,
-            Double price, Double area, String ownerName) {
+            Double price, Double area, String ownerName,
+            User user,
+            String verificationStatus,
+            Double verificationScore,
+            LocalDate registrationDate,
+            LocalDate verificationDate) {
+
         this.id = id;
         this.title = title;
         this.address = address;
@@ -45,6 +69,11 @@ public class Property {
         this.price = price;
         this.area = area;
         this.ownerName = ownerName;
+        this.user = user;
+        this.verificationStatus = verificationStatus;
+        this.verificationScore = verificationScore;
+        this.registrationDate = registrationDate;
+        this.verificationDate = verificationDate;
     }
 
     public Long getId() {
@@ -117,5 +146,45 @@ public class Property {
 
     public void setOwnerName(String ownerName) {
         this.ownerName = ownerName;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getVerificationStatus() {
+        return verificationStatus;
+    }
+
+    public void setVerificationStatus(String verificationStatus) {
+        this.verificationStatus = verificationStatus;
+    }
+
+    public Double getVerificationScore() {
+        return verificationScore;
+    }
+
+    public void setVerificationScore(Double verificationScore) {
+        this.verificationScore = verificationScore;
+    }
+
+    public LocalDate getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(LocalDate registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public LocalDate getVerificationDate() {
+        return verificationDate;
+    }
+
+    public void setVerificationDate(LocalDate verificationDate) {
+        this.verificationDate = verificationDate;
     }
 }
