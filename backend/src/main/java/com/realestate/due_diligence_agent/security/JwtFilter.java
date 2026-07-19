@@ -40,6 +40,9 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain)
             throws ServletException, IOException {
+        System.out.println("========== JWT FILTER ==========");
+        System.out.println("URI: " + request.getRequestURI());
+        System.out.println("Authorization Header: " + request.getHeader("Authorization"));
 
         String authHeader = request.getHeader("Authorization");
 
@@ -83,6 +86,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         } catch (Exception e) {
 
+            System.out.println("========== JWT ERROR ==========");
             e.printStackTrace();
 
             SecurityContextHolder.clearContext();
