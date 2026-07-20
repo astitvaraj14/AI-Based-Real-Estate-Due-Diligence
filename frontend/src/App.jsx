@@ -5,6 +5,7 @@ import Register from "./pages/register/Register";
 
 import Dashboard from "./pages/Dashboard";
 import PropertySearch from "./pages/PropertySearch";
+import DueDiligence from "./pages/DueDiligence";
 import AddProperty from "./pages/AddProperty";
 import AddressValidation from "./pages/AddressValidation";
 import Reports from "./pages/Reports";
@@ -20,22 +21,12 @@ function App() {
       <Routes>
 
         {/* Public Routes */}
-
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         
-        <Route path="/" element={<Dashboard />} />
-
-        <Route path="/property-search" element={<PropertySearch />} />
-
-        <Route path="/reports" element={<Reports />} />
-
-        <Route path="/comparables" element={<Comparables />} />
-
-        <Route path="/risk-monitoring" element={<RiskMonitoring />} />
-
-      <Route path="/audit-log" element={<AuditLog />} />
 
         {/* Protected Routes */}
-
         <Route
           path="/dashboard"
           element={
@@ -50,6 +41,24 @@ function App() {
           element={
             <ProtectedRoute>
               <PropertySearch />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/due-diligence"
+          element={
+            <ProtectedRoute>
+              <DueDiligence />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/due-diligence/:id"
+          element={
+            <ProtectedRoute>
+              <DueDiligence />
             </ProtectedRoute>
           }
         />
