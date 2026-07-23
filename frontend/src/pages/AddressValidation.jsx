@@ -1,6 +1,4 @@
 import { useState } from "react";
-import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
 import api from "../services/api";
 
 function AddressValidation() {
@@ -12,7 +10,7 @@ function AddressValidation() {
     const validateAddress = async () => {
 
         if (!address.trim()) {
-            alert("Please enter an address");
+            alert("Please enter an address.");
             return;
         }
 
@@ -22,7 +20,7 @@ function AddressValidation() {
 
             const response = await api.get("/address/validate", {
                 params: {
-                    address: address
+                    address
                 }
             });
 
@@ -30,9 +28,9 @@ function AddressValidation() {
 
         } catch (err) {
 
-            console.log(err);
+            console.error(err);
 
-            alert("Unable to validate address");
+            alert("Unable to validate address.");
 
         } finally {
 
@@ -44,63 +42,97 @@ function AddressValidation() {
 
     return (
 
-        <div className="bg-gray-100 min-h-screen">
+        <div className="space-y-8">
 
-            <Navbar />
+            {/* ===========================
+                PAGE HEADER
+            =========================== */}
 
-            <div className="flex">
+            <div className="bg-gradient-to-r from-blue-900 to-blue-700 rounded-2xl text-white p-8 shadow-lg">
 
-                <Sidebar />
+                <h1 className="text-4xl font-bold">
 
-                <div className="flex-1 p-10">
+                    Address Validation
 
-                    <h1 className="text-3xl font-bold mb-8">
-                        Address Validation
-                    </h1>
+                </h1>
 
-                    <div className="bg-white rounded-xl shadow p-8 max-w-2xl">
+                <p className="mt-3 text-blue-100">
 
-                        <input
-                            className="border p-3 rounded w-full mb-5"
-                            placeholder="Enter Property Address"
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                        />
+                    Verify property addresses before adding them to the system.
 
-                        <button
-                            onClick={validateAddress}
-                            className="bg-green-700 text-white px-6 py-3 rounded hover:bg-green-800"
+                </p>
+
+            </div>
+
+            {/* ===========================
+                VALIDATION CARD
+            =========================== */}
+
+            <div className="bg-white rounded-2xl shadow-lg p-8 max-w-4xl">
+
+                <label className="block text-lg font-semibold mb-3">
+
+                    Property Address
+
+                </label>
+
+                <textarea
+                    rows="4"
+                    className="w-full border rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter complete property address..."
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                />
+
+                <button
+                    onClick={validateAddress}
+                    disabled={loading}
+                    className={`mt-6 px-8 py-3 rounded-lg text-white font-semibold transition ${
+                        loading
+                            ? "bg-gray-500 cursor-not-allowed"
+                            : "bg-blue-800 hover:bg-blue-900"
+                    }`}
+                >
+                    {loading ? "Validating..." : "Validate Address"}
+                </button>
+
+                {/* ===========================
+                    RESULT
+                =========================== */}
+
+                {result && (
+
+                    <div
+                        className={`mt-8 rounded-xl border p-6 ${
+                            result.valid
+                                ? "bg-green-50 border-green-500"
+                                : "bg-red-50 border-red-500"
+                        }`}
+                    >
+
+                        <h2
+                            className={`text-2xl font-bold ${
+                                result.valid
+                                    ? "text-green-700"
+                                    : "text-red-700"
+                            }`}
                         >
-                            {loading ? "Validating..." : "Validate Address"}
-                        </button>
 
-                        {result && (
+                            {result.valid
+                                ? "✅ Address Verified"
+                                : "❌ Address Validation Failed"}
 
-                            <div
-                                className={`mt-8 p-5 rounded-lg ${
-                                    result.valid
-                                        ? "bg-green-100 border border-green-500"
-                                        : "bg-red-100 border border-red-500"
-                                }`}
-                            >
+                        </h2>
 
-                                <h2 className="text-xl font-bold mb-2">
+                        <p className="mt-4 text-gray-700">
 
-                                    {result.valid
-                                        ? "✅ Address Valid"
-                                        : "❌ Address Invalid"}
+                            {result.message}
 
-                                </h2>
-
-                                <p>{result.message}</p>
-
-                            </div>
-
-                        )}
+                        </p>
 
                     </div>
 
-                </div>
+                )}
 
             </div>
 

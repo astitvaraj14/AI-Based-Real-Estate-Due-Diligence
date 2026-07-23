@@ -26,18 +26,28 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
+
                 .cors(Customizer.withDefaults())
+
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/buyer/**").hasRole("BUYER")
-                .requestMatchers("/api/agent/**").hasRole("AGENT")
-                .requestMatchers("/api/legal/**").hasRole("LEGAL_REVIEWER")
-                .requestMatchers("/api/bank/**").hasRole("FINANCIAL_INSTITUTION")
-                .anyRequest().authenticated()
-                )
-                .httpBasic(Customizer.withDefaults())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+                        // Public APIs
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // Role Based APIs
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/buyer/**").hasRole("BUYER")
+                        .requestMatchers("/api/agent/**").hasRole("AGENT")
+                        .requestMatchers("/api/legal/**").hasRole("LEGAL_REVIEWER")
+                        .requestMatchers("/api/bank/**").hasRole("FINANCIAL_INSTITUTION")
+
+                        // Everything else
+                        .anyRequest().authenticated())
+
+                        .httpBasic(httpBasic -> httpBasic.disable())
+
+                .addFilterBefore(jwtFilter,
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -49,22 +59,21 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "http://localhost:5174"
-        ));
+                "http://localhost:5174"));
 
         configuration.setAllowedMethods(List.of(
                 "GET",
                 "POST",
                 "PUT",
                 "DELETE",
-                "OPTIONS"
-        ));
+                "OPTIONS"));
 
         configuration.setAllowedHeaders(List.of("*"));
+
         configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source
-                = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
 
         source.registerCorsConfiguration("/**", configuration);
 

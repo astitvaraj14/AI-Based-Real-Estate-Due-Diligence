@@ -5,14 +5,20 @@ public class AuthResponse {
     private String token;
     private String email;
     private String role;
+    private boolean roleSelectionRequired;
 
     public AuthResponse() {
     }
 
-    public AuthResponse(String token, String email, String role) {
+    public AuthResponse(String token,
+                        String email,
+                        String role,
+                        boolean roleSelectionRequired) {
+
         this.token = token;
         this.email = email;
         this.role = role;
+        this.roleSelectionRequired = roleSelectionRequired;
     }
 
     public String getToken() {
@@ -37,5 +43,13 @@ public class AuthResponse {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public boolean isRoleSelectionRequired() {
+        return roleSelectionRequired;
+    }
+
+    public void setRoleSelectionRequired(boolean roleSelectionRequired) {
+        this.roleSelectionRequired = roleSelectionRequired;
     }
 }

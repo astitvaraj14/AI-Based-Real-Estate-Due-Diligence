@@ -1,168 +1,433 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { FaBuilding, FaEnvelope, FaLock, FaShieldAlt } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+
+import {
+  FaBuilding,
+  FaEnvelope,
+  FaLock,
+  FaShieldAlt,
+  FaEye,
+  FaEyeSlash,
+  FaMobileAlt,
+  FaArrowRight,
+  FaCheckCircle,
+} from "react-icons/fa";
+
+import { GoogleLogin } from "@react-oauth/google";
+import toast from "react-hot-toast";
+
 import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
+  const { login: authLogin } = useAuth();
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(
+    localStorage.getItem("rememberEmail") || ""
+  );
+
   const [password, setPassword] = useState("");
+
+  const [rememberMe, setRememberMe] = useState(
+    !!localStorage.getItem("rememberEmail")
+  );
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   const login = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await api.post("/auth/login", {
+      setLoading(true);
+
+      const { data } = await api.post("/auth/login", {
         email,
         password,
       });
 
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("email", response.data.email);
-        localStorage.setItem("role", response.data.role);
+      authLogin(data.token, {
+        email: data.email,
+        role: data.role,
+      });
+
+      if (rememberMe) {
+        localStorage.setItem("rememberEmail", email);
+      } else {
+        localStorage.removeItem("rememberEmail");
+      }
+
+      toast.success("Login Successful");
 
       navigate("/dashboard");
     } catch (err) {
-      console.log(err);
-      alert("Invalid Email or Password");
+      toast.error(
+        err.response?.data?.message ||
+          "Invalid email or password"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-blue-900 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center overflow-hidden p-6">
 
-      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2">
+      <div className="w-full max-w-7xl h-[94vh] bg-white rounded-[32px] shadow-2xl overflow-hidden flex">
 
-        {/* LEFT PANEL */}
+        {/* ================= LEFT PANEL ================= */}
 
-        <div className="bg-slate-900 text-white p-12 flex flex-col justify-center">
+        <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-blue-700 via-blue-800 to-indigo-900 text-white flex-col justify-between p-14">
 
-          <div className="w-20 h-20 rounded-2xl bg-blue-600 flex items-center justify-center mb-8">
-            <FaBuilding size={38} />
+          <div>
+
+            <div className="flex items-center gap-5">
+
+              <div className="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center">
+
+                <FaBuilding className="text-3xl" />
+
+              </div>
+
+              <div>
+
+                <h1 className="text-4xl font-bold">
+                  Real Estate AI
+                </h1>
+
+                <p className="text-blue-200 mt-1">
+                  Due Diligence Platform
+                </p>
+
+              </div>
+
+            </div>
+
+            <h2 className="text-5xl font-bold leading-tight mt-20">
+
+              Verify Properties
+              <br />
+              With Confidence.
+
+            </h2>
+
+            <p className="mt-8 text-blue-100 text-lg leading-8">
+
+              Secure platform for property verification,
+              ownership validation, legal due diligence,
+              fraud detection and intelligent risk analysis.
+
+            </p>
+
           </div>
 
-          <h1 className="text-5xl font-bold leading-tight">
-            Real Estate
-          </h1>
+          <div className="space-y-5">
 
-          <h2 className="text-2xl text-blue-400 font-semibold mt-3">
-            Due Diligence Platform
-          </h2>
+            {[
+              "Secure Authentication",
+              "Property Verification",
+              "Legal Due Diligence",
+              "Risk Assessment",
+            ].map((item) => (
+              <div
+                key={item}
+                className="bg-white/10 rounded-2xl p-5 flex items-center gap-4 backdrop-blur-md"
+              >
 
-          <p className="mt-8 text-slate-300 leading-8 text-lg">
-            A secure enterprise platform for property verification,
-            legal due diligence, ownership validation, and risk
-            assessment.
-          </p>
+                <FaCheckCircle className="text-green-300 text-xl" />
 
-          <div className="mt-12 space-y-5">
+                <span className="text-lg">
+                  {item}
+                </span>
 
-            <div className="flex items-center gap-4">
-              <FaShieldAlt className="text-emerald-400 text-xl" />
-              <span>Secure JWT Authentication</span>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <FaShieldAlt className="text-emerald-400 text-xl" />
-              <span>Property Verification</span>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <FaShieldAlt className="text-emerald-400 text-xl" />
-              <span>Legal & Financial Review</span>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <FaShieldAlt className="text-emerald-400 text-xl" />
-              <span>Fraud Detection Support</span>
-            </div>
+              </div>
+            ))}
 
           </div>
 
         </div>
 
-        {/* RIGHT PANEL */}
+        {/* ================= RIGHT PANEL ================= */}
 
-        <div className="p-12 flex flex-col justify-center">
+        <div className="w-full lg:w-1/2 flex justify-center items-center px-10 bg-white">
 
-          <h2 className="text-4xl font-bold text-slate-800">
-            Welcome Back
-          </h2>
+          <div className="w-full max-w-md">
 
-          <p className="text-slate-500 mt-2 mb-10">
-            Sign in to access your dashboard.
-          </p>
+            <h1 className="text-4xl font-bold text-slate-800">
 
-          <form onSubmit={login} className="space-y-6">
+              Welcome Back 👋
 
-            <div>
+            </h1>
 
-              <label className="text-sm font-medium text-slate-700">
-                Email Address
-              </label>
+            <p className="text-gray-500 mt-3">
 
-              <div className="mt-2 flex items-center border border-slate-300 rounded-xl px-4 focus-within:ring-2 focus-within:ring-blue-500">
+              Sign in to continue managing your properties.
 
-                <FaEnvelope className="text-slate-400" />
-
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full p-4 outline-none rounded-xl"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-
-              </div>
-
-            </div>
-
-            <div>
-
-              <label className="text-sm font-medium text-slate-700">
-                Password
-              </label>
-
-              <div className="mt-2 flex items-center border border-slate-300 rounded-xl px-4 focus-within:ring-2 focus-within:ring-blue-500">
-
-                <FaLock className="text-slate-400" />
-
-                <input
-                  type="password"
-                  placeholder="Enter your password"
-                  className="w-full p-4 outline-none rounded-xl"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-
-              </div>
-
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 transition duration-300 text-white py-4 rounded-xl font-semibold text-lg shadow-lg"
-            >
-              Login
-            </button>
-
-          </form>
-
-          <div className="mt-8 text-center">
-
-            <p className="text-slate-600">
-              Don't have an account?
             </p>
 
-            <Link
-              to="/register"
-              className="text-blue-600 hover:text-blue-700 font-semibold"
+            <form
+              onSubmit={login}
+              className="mt-8 space-y-5"
             >
-              Create Account
-            </Link>
+
+              {/* EMAIL */}
+
+              <div>
+
+                <label className="font-semibold text-gray-700 block mb-2">
+
+                  Email Address
+
+                </label>
+
+                <div className="relative">
+
+                  <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) =>
+                      setEmail(e.target.value)
+                    }
+                    required
+                    className="w-full h-14 rounded-xl border border-gray-300 pl-12 pr-4 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition"
+                  />
+
+                </div>
+
+              </div>
+
+              {/* PASSWORD */}
+
+              <div>
+
+                <label className="font-semibold text-gray-700 block mb-2">
+
+                  Password
+
+                </label>
+
+                <div className="relative">
+
+                  <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+
+                  <input
+                    type={
+                      showPassword
+                        ? "text"
+                        : "password"
+                    }
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) =>
+                      setPassword(e.target.value)
+                    }
+                    required
+                    className="w-full h-14 rounded-xl border border-gray-300 pl-12 pr-12 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowPassword(!showPassword)
+                    }
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
+                  >
+
+                    {showPassword ? (
+                      <FaEyeSlash />
+                    ) : (
+                      <FaEye />
+                    )}
+
+                  </button>
+
+                </div>
+
+              </div>
+                            {/* Remember Me & Forgot Password */}
+
+                            <div className="flex items-center justify-between">
+
+<label className="flex items-center gap-2 text-gray-600 cursor-pointer">
+
+  <input
+    type="checkbox"
+    checked={rememberMe}
+    onChange={(e) =>
+      setRememberMe(e.target.checked)
+    }
+    className="w-4 h-4 accent-blue-600"
+  />
+
+  <span>Remember Me</span>
+
+</label>
+
+<button
+  type="button"
+  onClick={() =>
+    navigate("/forgot-password")
+  }
+  className="text-blue-600 hover:text-blue-700 font-semibold transition"
+>
+  Forgot Password?
+</button>
+
+</div>
+
+{/* Login Button */}
+
+<button
+type="submit"
+disabled={loading}
+className="w-full h-14 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold text-lg flex justify-center items-center gap-3 transition-all duration-300 hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed"
+>
+
+{loading ? (
+  "Signing In..."
+) : (
+  <>
+    Sign In
+    <FaArrowRight />
+  </>
+)}
+
+</button>
+
+{/* Divider */}
+
+<div className="flex items-center my-6">
+
+<div className="flex-1 border-t border-gray-300"></div>
+
+<span className="mx-4 text-gray-400 text-sm uppercase tracking-wider">
+
+  OR
+
+</span>
+
+<div className="flex-1 border-t border-gray-300"></div>
+
+</div>
+
+{/* Google Login */}
+
+<div className="flex justify-center">
+
+<GoogleLogin
+  onSuccess={async (credentialResponse) => {
+
+    try {
+
+      const res = await api.post(
+        "/auth/google",
+        {
+          token:
+            credentialResponse.credential,
+        }
+      );
+
+      if (
+        res.data.roleSelectionRequired
+      ) {
+
+        navigate("/select-role", {
+          state: {
+            email:
+              res.data.email,
+          },
+        });
+
+        return;
+      }
+
+      authLogin(res.data.token, {
+        email: res.data.email,
+        role: res.data.role,
+      });
+
+      toast.success(
+        "Login Successful"
+      );
+
+      navigate("/dashboard");
+
+    } catch (err) {
+
+      toast.error(
+        err.response?.data
+          ?.message ||
+          "Google Login Failed"
+      );
+
+    }
+
+  }}
+
+  onError={() =>
+    toast.error(
+      "Google Login Failed"
+    )
+  }
+
+/>
+
+</div>
+
+{/* Divider */}
+
+<div className="flex items-center my-6">
+
+<div className="flex-1 border-t border-gray-300"></div>
+
+<span className="mx-4 text-gray-400 text-sm uppercase tracking-wider">
+
+  OR
+
+</span>
+
+<div className="flex-1 border-t border-gray-300"></div>
+
+</div>
+
+{/* Mobile Login */}
+
+<button
+type="button"
+onClick={() =>
+  navigate("/mobile-login")
+}
+className="w-full h-14 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300 flex justify-center items-center gap-3 font-semibold text-lg"
+>
+
+<FaMobileAlt />
+
+Continue with Mobile Number
+
+</button>
+              {/* Register */}
+
+              <div className="pt-6 text-center border-t border-gray-200">
+
+                <p className="text-gray-600">
+                  Don't have an account?
+                </p>
+
+                <Link
+                  to="/register"
+                  className="inline-block mt-2 text-blue-600 hover:text-blue-700 font-semibold hover:underline transition"
+                >
+                  Create Account
+                </Link>
+
+              </div>
+
+            </form>
 
           </div>
 
