@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, RecaptchaVerifier } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDBWqLdo6cKrJC3zajeCGxWSJnbqw0EJrk",
+  apiKey: "AIzaSyD0RFVv6fMYj_GIbnce8YUZ9iqfDQFKZvQ",
   authDomain: "real-estate-due-diligenc-a0a9b.firebaseapp.com",
   projectId: "real-estate-due-diligenc-a0a9b",
   storageBucket: "real-estate-due-diligenc-a0a9b.firebasestorage.app",
