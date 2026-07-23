@@ -12,9 +12,13 @@ import org.springframework.stereotype.Service;
 import com.realestate.due_diligence_agent.dto.AddressValidationResponse;
 import com.realestate.due_diligence_agent.dto.PropertyRequest;
 import com.realestate.due_diligence_agent.dto.VerificationResult;
+import com.realestate.due_diligence_agent.dto.LandRegistryResponse;
+import com.realestate.due_diligence_agent.dto.OwnershipResponse;
 import com.realestate.due_diligence_agent.entity.Property;
 import com.realestate.due_diligence_agent.entity.User;
 import com.realestate.due_diligence_agent.repository.PropertyRepository;
+import com.realestate.due_diligence_agent.dto.PropertyDetailsResponse;
+
 
 @Service
 public class PropertyService {
@@ -22,14 +26,20 @@ public class PropertyService {
     private final PropertyRepository propertyRepository;
     private final AddressValidationService addressValidationService;
     private final VerificationService verificationService;
+    private final LandRegistryService landRegistryService;
+    private final OwnershipService ownershipService;
 
     public PropertyService(PropertyRepository propertyRepository,
             AddressValidationService addressValidationService,
-            VerificationService verificationService) {
+            VerificationService verificationService,
+            LandRegistryService landRegistryService,
+            OwnershipService ownershipService) {
 
         this.propertyRepository = propertyRepository;
         this.addressValidationService = addressValidationService;
         this.verificationService = verificationService;
+        this.landRegistryService = landRegistryService;
+        this.ownershipService = ownershipService;
     }
 
     // ==========================================
@@ -243,4 +253,43 @@ public class PropertyService {
                         Property::getPropertyType,
                         Collectors.counting()));
     }
+    //=========================
+    //get property by id
+    //=========================
+
+    public PropertyDetailsResponse getPropertyById(Long id) {
+
+    User loggedInUser = getLoggedInUser();
+
+    Property property = propertyRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Property not found"));
+
+    if (!property.getUser().getId().equals(loggedInUser.getId())) {
+        throw new RuntimeException("Access denied");
+    }
+
+    LandRegistryResponse landRegistry =
+            landRegistryService.getRegistryDetails(property);
+
+    OwnershipResponse ownership =
+            ownershipService.getOwnershipDetails(property);
+
+    return new PropertyDetailsResponse(
+            property.getId(),
+            property.getTitle(),
+            property.getAddress(),
+            property.getCity(),
+            property.getState(),
+            property.getPropertyType(),
+            property.getPrice(),
+            property.getArea(),
+            property.getOwnerName(),
+            property.getVerificationStatus(),
+            property.getVerificationScore(),
+            property.getRegistrationDate(),
+            property.getVerificationDate(),
+            landRegistry,
+            ownership
+    );
+}
 }

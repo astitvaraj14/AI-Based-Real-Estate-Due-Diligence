@@ -1,13 +1,16 @@
 package com.realestate.due_diligence_agent.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -39,6 +42,10 @@ public class Property {
     @JoinColumn(name = "user_id")
     private User user;
 
+    // One Property -> Many Tax History Records
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
+    private List<PropertyTaxHistory> taxHistory;
+
     // Verification Details
     private String verificationStatus;
 
@@ -52,13 +59,13 @@ public class Property {
     }
 
     public Property(Long id, String title, String address, String city,
-            String state, String propertyType,
-            Double price, Double area, String ownerName,
-            User user,
-            String verificationStatus,
-            Double verificationScore,
-            LocalDate registrationDate,
-            LocalDate verificationDate) {
+                    String state, String propertyType,
+                    Double price, Double area, String ownerName,
+                    User user,
+                    String verificationStatus,
+                    Double verificationScore,
+                    LocalDate registrationDate,
+                    LocalDate verificationDate) {
 
         this.id = id;
         this.title = title;
@@ -75,6 +82,8 @@ public class Property {
         this.registrationDate = registrationDate;
         this.verificationDate = verificationDate;
     }
+
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -154,6 +163,14 @@ public class Property {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<PropertyTaxHistory> getTaxHistory() {
+        return taxHistory;
+    }
+
+    public void setTaxHistory(List<PropertyTaxHistory> taxHistory) {
+        this.taxHistory = taxHistory;
     }
 
     public String getVerificationStatus() {
