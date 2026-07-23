@@ -2,12 +2,12 @@ import { initializeApp } from "firebase/app";
 import { getAuth, RecaptchaVerifier } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD0RFVv6fMYj_GIbnce8YUZ9iqfDQFKZvQ",
-  authDomain: "real-estate-due-diligenc-a0a9b.firebaseapp.com",
-  projectId: "real-estate-due-diligenc-a0a9b",
-  storageBucket: "real-estate-due-diligenc-a0a9b.firebasestorage.app",
-  messagingSenderId: "688376259939",
-  appId: "1:688376259939:web:66237c6ce7f517db02df56",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
