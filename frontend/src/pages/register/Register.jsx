@@ -71,7 +71,8 @@ function Register() {
           <p className="mt-6 text-gray-300 leading-7 max-w-md">
 
             Create your account to securely verify ownership,
-            legal records, tax history, zoning information,
+            legal records, tax history, LandRegistryResponse
+            zoning information,
             permits and environmental risks in one place.
 
           </p>

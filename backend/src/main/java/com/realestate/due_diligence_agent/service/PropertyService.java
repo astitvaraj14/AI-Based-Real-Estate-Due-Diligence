@@ -18,6 +18,9 @@ import com.realestate.due_diligence_agent.entity.Property;
 import com.realestate.due_diligence_agent.entity.User;
 import com.realestate.due_diligence_agent.repository.PropertyRepository;
 import com.realestate.due_diligence_agent.dto.PropertyDetailsResponse;
+import com.realestate.due_diligence_agent.dto.ZoningResponse;
+import com.realestate.due_diligence_agent.dto.LegalRecordResponse;
+
 
 
 @Service
@@ -28,18 +31,23 @@ public class PropertyService {
     private final VerificationService verificationService;
     private final LandRegistryService landRegistryService;
     private final OwnershipService ownershipService;
+    private final LegalRecordService legalRecordService;
+    private final ZoningService zoningService;
 
     public PropertyService(PropertyRepository propertyRepository,
             AddressValidationService addressValidationService,
             VerificationService verificationService,
             LandRegistryService landRegistryService,
-            OwnershipService ownershipService) {
+            OwnershipService ownershipService, LegalRecordService legalRecordService, ZoningService zoningService) {
 
         this.propertyRepository = propertyRepository;
         this.addressValidationService = addressValidationService;
         this.verificationService = verificationService;
         this.landRegistryService = landRegistryService;
         this.ownershipService = ownershipService;
+        this.legalRecordService = legalRecordService;
+        this.zoningService = zoningService;
+
     }
 
     // ==========================================
@@ -257,39 +265,47 @@ public class PropertyService {
     //get property by id
     //=========================
 
-    public PropertyDetailsResponse getPropertyById(Long id) {
+    public PropertyDetailsResponse getPropertyDetailsById(Long id) {
 
-    User loggedInUser = getLoggedInUser();
+        User loggedInUser = getLoggedInUser();
 
-    Property property = propertyRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Property not found"));
+        Property property = propertyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Property not found"));
 
-    if (!property.getUser().getId().equals(loggedInUser.getId())) {
-        throw new RuntimeException("Access denied");
+        if (!property.getUser().getId().equals(loggedInUser.getId())) {
+            throw new RuntimeException("Access denied");
+        }
+
+        LandRegistryResponse landRegistry =
+                landRegistryService.getRegistryDetails(property);
+
+        OwnershipResponse ownership =
+                ownershipService.getOwnershipDetails(property);
+
+        LegalRecordResponse legalRecord =
+                legalRecordService.getLegalRecord(property);
+
+        ZoningResponse zoning =
+                zoningService.getZoning(property);
+
+        return new PropertyDetailsResponse(
+                property.getId(),
+                property.getTitle(),
+                property.getAddress(),
+                property.getCity(),
+                property.getState(),
+                property.getPropertyType(),
+                property.getPrice(),
+                property.getArea(),
+                property.getOwnerName(),
+                property.getVerificationStatus(),
+                property.getVerificationScore(),
+                property.getRegistrationDate(),
+                property.getVerificationDate(),
+                landRegistry,
+                ownership,
+                legalRecord,
+                zoning
+        );
     }
-
-    LandRegistryResponse landRegistry =
-            landRegistryService.getRegistryDetails(property);
-
-    OwnershipResponse ownership =
-            ownershipService.getOwnershipDetails(property);
-
-    return new PropertyDetailsResponse(
-            property.getId(),
-            property.getTitle(),
-            property.getAddress(),
-            property.getCity(),
-            property.getState(),
-            property.getPropertyType(),
-            property.getPrice(),
-            property.getArea(),
-            property.getOwnerName(),
-            property.getVerificationStatus(),
-            property.getVerificationScore(),
-            property.getRegistrationDate(),
-            property.getVerificationDate(),
-            landRegistry,
-            ownership
-    );
-}
 }

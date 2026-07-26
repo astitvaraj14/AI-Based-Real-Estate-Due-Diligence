@@ -19,4 +19,7 @@ public class LandRegistryResponse {
     private String registryOffice;
     private boolean titleVerified;
     private String lastUpdated;
+
+
+
 }

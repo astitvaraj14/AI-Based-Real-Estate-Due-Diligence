@@ -31,4 +31,10 @@ public class PropertyDetailsResponse {
 
     // Ownership Records
     private OwnershipResponse ownership;
+
+    // Legal Records
+    private LegalRecordResponse legalRecord;
+
+    // Zoning Records
+    private ZoningResponse zoning;
 }
