@@ -20,6 +20,9 @@ import com.realestate.due_diligence_agent.repository.PropertyRepository;
 import com.realestate.due_diligence_agent.dto.PropertyDetailsResponse;
 import com.realestate.due_diligence_agent.dto.ZoningResponse;
 import com.realestate.due_diligence_agent.dto.LegalRecordResponse;
+import com.realestate.due_diligence_agent.dto.FloodZoneResponse;
+
+
 
 
 
@@ -33,12 +36,14 @@ public class PropertyService {
     private final OwnershipService ownershipService;
     private final LegalRecordService legalRecordService;
     private final ZoningService zoningService;
+    private final FloodZoneService floodZoneService;
 
     public PropertyService(PropertyRepository propertyRepository,
             AddressValidationService addressValidationService,
             VerificationService verificationService,
             LandRegistryService landRegistryService,
-            OwnershipService ownershipService, LegalRecordService legalRecordService, ZoningService zoningService) {
+            OwnershipService ownershipService, LegalRecordService legalRecordService,
+                           ZoningService zoningService, FloodZoneService floodZoneService      ) {
 
         this.propertyRepository = propertyRepository;
         this.addressValidationService = addressValidationService;
@@ -47,6 +52,7 @@ public class PropertyService {
         this.ownershipService = ownershipService;
         this.legalRecordService = legalRecordService;
         this.zoningService = zoningService;
+        this.floodZoneService = floodZoneService;
 
     }
 
@@ -288,6 +294,9 @@ public class PropertyService {
         ZoningResponse zoning =
                 zoningService.getZoning(property);
 
+        FloodZoneResponse floodZone =
+                floodZoneService.getFloodZone(property);
+
         return new PropertyDetailsResponse(
                 property.getId(),
                 property.getTitle(),
@@ -305,7 +314,8 @@ public class PropertyService {
                 landRegistry,
                 ownership,
                 legalRecord,
-                zoning
+                zoning,
+                floodZone
         );
     }
 }

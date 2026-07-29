@@ -37,4 +37,7 @@ public class PropertyDetailsResponse {
 
     // Zoning Records
     private ZoningResponse zoning;
+
+    // Flood Records
+    private FloodZoneResponse floodZone;
 }
