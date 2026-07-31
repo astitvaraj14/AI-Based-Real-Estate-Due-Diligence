@@ -21,6 +21,21 @@ import com.realestate.due_diligence_agent.dto.PropertyDetailsResponse;
 import com.realestate.due_diligence_agent.dto.ZoningResponse;
 import com.realestate.due_diligence_agent.dto.LegalRecordResponse;
 import com.realestate.due_diligence_agent.dto.FloodZoneResponse;
+import com.realestate.due_diligence_agent.entity.LandRegistry;
+import com.realestate.due_diligence_agent.repository.LandRegistryRepository;
+import com.realestate.due_diligence_agent.repository.OwnershipRepository;
+import com.realestate.due_diligence_agent.entity.Ownership;
+import com.realestate.due_diligence_agent.entity.LegalRecord;
+import com.realestate.due_diligence_agent.repository.LegalRecordRepository;
+import com.realestate.due_diligence_agent.repository.ZoningRepository;
+import com.realestate.due_diligence_agent.entity.Zoning;
+import com.realestate.due_diligence_agent.repository.FloodZoneRepository;
+import com.realestate.due_diligence_agent.entity.FloodZone;
+
+
+
+
+
 
 
 
@@ -37,13 +52,20 @@ public class PropertyService {
     private final LegalRecordService legalRecordService;
     private final ZoningService zoningService;
     private final FloodZoneService floodZoneService;
+    private final LandRegistryRepository landRegistryRepository;
+    private final OwnershipRepository ownershipRepository;
+    private final LegalRecordRepository legalRecordRepository;
+    private final ZoningRepository zoningRepository;
+    private final FloodZoneRepository floodZoneRepository;
 
     public PropertyService(PropertyRepository propertyRepository,
             AddressValidationService addressValidationService,
             VerificationService verificationService,
             LandRegistryService landRegistryService,
             OwnershipService ownershipService, LegalRecordService legalRecordService,
-                           ZoningService zoningService, FloodZoneService floodZoneService      ) {
+                           ZoningService zoningService, FloodZoneService floodZoneService,
+                           LandRegistryRepository landRegistryRepository,
+                           OwnershipRepository ownershipRepository, LegalRecordRepository legalRecordRepository, ZoningRepository zoningRepository, FloodZoneRepository floodZoneRepository) {
 
         this.propertyRepository = propertyRepository;
         this.addressValidationService = addressValidationService;
@@ -53,6 +75,11 @@ public class PropertyService {
         this.legalRecordService = legalRecordService;
         this.zoningService = zoningService;
         this.floodZoneService = floodZoneService;
+        this.landRegistryRepository = landRegistryRepository;
+        this.ownershipRepository = ownershipRepository;
+        this.legalRecordRepository = legalRecordRepository;
+        this.zoningRepository = zoningRepository;
+        this.floodZoneRepository = floodZoneRepository;
 
     }
 
@@ -99,7 +126,107 @@ public class PropertyService {
         property.setRegistrationDate(LocalDate.now());
         property.setVerificationDate(null);
 
-        return propertyRepository.save(property);
+        Property savedProperty = propertyRepository.save(property);
+        if (request.getLandRegistry() != null) {
+            LandRegistry landRegistry = new LandRegistry();
+
+            landRegistry.setRegistryNumber(
+                    request.getLandRegistry().getRegistryNumber());
+
+            landRegistry.setRegistryStatus(
+                    request.getLandRegistry().getRegistryStatus());
+
+            landRegistry.setRegistryOffice(
+                    request.getLandRegistry().getRegistryOffice());
+
+            landRegistry.setTitleVerified(
+                    request.getLandRegistry().getTitleVerified());
+
+            landRegistry.setLastUpdated(
+                    request.getLandRegistry().getLastUpdated());
+
+            landRegistry.setProperty(savedProperty);
+            landRegistryRepository.save(landRegistry);        }
+
+        if (request.getOwnership() != null) {
+
+            Ownership ownership = new Ownership();
+
+            ownership.setOwnerName(
+                    request.getOwnership().getOwnerName());
+
+            ownership.setOwnerVerified(
+                    request.getOwnership().getOwnerVerified());
+
+            ownership.setOwnershipType(
+                    request.getOwnership().getOwnershipType());
+
+            ownership.setOwnershipSince(
+                    request.getOwnership().getOwnershipSince());
+
+            ownership.setRemarks(
+                    request.getOwnership().getRemarks());
+
+            ownership.setProperty(savedProperty);
+
+            ownershipRepository.save(ownership);
+        }
+        if (request.getLegalRecord() != null) {
+
+            LegalRecord legalRecord = new LegalRecord();
+
+            legalRecord.setCourtCases(
+                    request.getLegalRecord().getCourtCases());
+
+            legalRecord.setCaseStatus(
+                    request.getLegalRecord().getCaseStatus());
+
+            legalRecord.setRemarks(
+                    request.getLegalRecord().getRemarks());
+
+            legalRecord.setProperty(savedProperty);
+
+            legalRecordRepository.save(legalRecord);
+        }
+        if (request.getZoning() != null) {
+
+            Zoning zoning = new Zoning();
+
+            zoning.setZoneType(
+                    request.getZoning().getZoneType());
+
+            zoning.setConstructionAllowed(
+                    request.getZoning().getConstructionAllowed());
+
+            zoning.setAuthority(
+                    request.getZoning().getAuthority());
+
+            zoning.setProperty(savedProperty);
+
+            zoningRepository.save(zoning);
+        }
+        if (request.getFloodZone() != null) {
+
+            FloodZone floodZone = new FloodZone();
+
+            floodZone.setZoneType(
+                    request.getFloodZone().getZoneType());
+
+            floodZone.setRiskLevel(
+                    request.getFloodZone().getRiskLevel());
+
+            floodZone.setInsuranceRequired(
+                    request.getFloodZone().getInsuranceRequired());
+
+            floodZone.setAuthority(
+                    request.getFloodZone().getAuthority());
+
+            floodZone.setProperty(savedProperty);
+
+            floodZoneRepository.save(floodZone);
+        }
+        return savedProperty;
+
     }
 
     // ==========================================
@@ -285,17 +412,18 @@ public class PropertyService {
         LandRegistryResponse landRegistry =
                 landRegistryService.getRegistryDetails(property);
 
-        OwnershipResponse ownership =
-                ownershipService.getOwnershipDetails(property);
-
         LegalRecordResponse legalRecord =
                 legalRecordService.getLegalRecord(property);
 
         ZoningResponse zoning =
-                zoningService.getZoning(property);
+                zoningService.getZoning(property);Zoning zoningEntity = new Zoning();
 
         FloodZoneResponse floodZone =
                 floodZoneService.getFloodZone(property);
+
+        OwnershipResponse ownership =
+                ownershipService.getOwnershipDetails(property);
+
 
         return new PropertyDetailsResponse(
                 property.getId(),

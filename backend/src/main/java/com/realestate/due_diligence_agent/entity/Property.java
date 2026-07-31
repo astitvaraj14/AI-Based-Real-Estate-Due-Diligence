@@ -3,15 +3,8 @@ package com.realestate.due_diligence_agent.entity;
 import java.time.LocalDate;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "properties")
@@ -54,6 +47,67 @@ public class Property {
     private LocalDate registrationDate;
 
     private LocalDate verificationDate;
+
+    public LandRegistry getLandRegistry() {
+        return landRegistry;
+    }
+
+    public void setLandRegistry(LandRegistry landRegistry) {
+        this.landRegistry = landRegistry;
+    }
+
+    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private FloodZone floodZone;
+
+    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private LandRegistry landRegistry;
+
+    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private LegalRecord legalRecord;
+
+    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private Ownership ownership;
+
+    public LegalRecord getLegalRecord() {
+        return legalRecord;
+    }
+
+    public void setLegalRecord(LegalRecord legalRecord) {
+        this.legalRecord = legalRecord;
+    }
+
+    public Ownership getOwnership() {
+        return ownership;
+    }
+
+    public void setOwnership(Ownership ownership) {
+        this.ownership = ownership;
+    }
+
+    public Zoning getZoning() {
+        return zoning;
+    }
+
+    public void setZoning(Zoning zoning) {
+        this.zoning = zoning;
+    }
+
+    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private Zoning zoning;
+
+    public FloodZone getFloodZone() {
+        return floodZone;
+    }
+
+    public void setFloodZone(FloodZone floodZone) {
+        this.floodZone = floodZone;
+    }
+
 
     public Property() {
     }

@@ -63,7 +63,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             System.out.println("Extracted Email: " + email);
 
-            User user = userRepository.findByEmail(email)
+            User user = userRepository.findByEmail(email)   
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             System.out.println("User Found: " + user.getEmail());

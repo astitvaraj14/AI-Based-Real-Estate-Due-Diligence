@@ -11,6 +11,54 @@ public class PropertyRequest {
     private Double area;
     private String ownerName;
 
+    private LandRegistryRequest landRegistry;
+
+    private OwnershipRequest ownership;
+
+    private LegalRecordRequest legalRecord;
+
+    private ZoningRequest zoning;
+    private FloodZoneRequest floodZone;
+
+    public LandRegistryRequest getLandRegistry() {
+        return landRegistry;
+    }
+
+    public void setLandRegistry(LandRegistryRequest landRegistry) {
+        this.landRegistry = landRegistry;
+
+    }
+
+
+    public OwnershipRequest getOwnership() {
+        return ownership;
+    }
+
+    public void setOwnership(OwnershipRequest ownership) {
+        this.ownership = ownership;
+    }
+    public LegalRecordRequest getLegalRecord() {
+        return legalRecord;
+    }
+
+    public void setLegalRecord(LegalRecordRequest legalRecord) {
+        this.legalRecord = legalRecord;
+    }
+    public ZoningRequest getZoning() {
+        return zoning;
+    }
+
+    public void setZoning(ZoningRequest zoning) {
+        this.zoning = zoning;
+    }
+    public FloodZoneRequest getFloodZone() {
+        return floodZone;
+    }
+
+    public void setFloodZone(FloodZoneRequest floodZone) {
+        this.floodZone = floodZone;
+    }
+
     public PropertyRequest() {
     }
 
