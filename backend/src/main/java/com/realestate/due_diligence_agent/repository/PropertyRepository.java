@@ -19,4 +19,6 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
     List<Property> findByPriceBetween(Double minPrice, Double maxPrice);
 
     Optional<Property> findByIdAndUser(Long id, User user);
+
+    List<Property> findByCityAndPropertyType(String city, String propertyType);
 }
