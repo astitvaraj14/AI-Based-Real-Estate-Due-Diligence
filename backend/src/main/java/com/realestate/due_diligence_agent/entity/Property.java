@@ -3,8 +3,17 @@ package com.realestate.due_diligence_agent.entity;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "properties")
@@ -48,66 +57,30 @@ public class Property {
 
     private LocalDate verificationDate;
 
-    public LandRegistry getLandRegistry() {
-        return landRegistry;
-    }
-
-    public void setLandRegistry(LandRegistry landRegistry) {
-        this.landRegistry = landRegistry;
-    }
-
-    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private FloodZone floodZone;
-
-    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    // Due-diligence child records. Property is the owning aggregate: it
+    // cascades all persistence operations to its children and removes a
+    // child row if it is ever detached (orphanRemoval), so there is never a
+    // duplicate/orphaned due-diligence row for a property.
+    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private LandRegistry landRegistry;
 
-    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private LegalRecord legalRecord;
-
-    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Ownership ownership;
 
-    public LegalRecord getLegalRecord() {
-        return legalRecord;
-    }
+    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private LegalRecord legalRecord;
 
-    public void setLegalRecord(LegalRecord legalRecord) {
-        this.legalRecord = legalRecord;
-    }
-
-    public Ownership getOwnership() {
-        return ownership;
-    }
-
-    public void setOwnership(Ownership ownership) {
-        this.ownership = ownership;
-    }
-
-    public Zoning getZoning() {
-        return zoning;
-    }
-
-    public void setZoning(Zoning zoning) {
-        this.zoning = zoning;
-    }
-
-    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Zoning zoning;
 
-    public FloodZone getFloodZone() {
-        return floodZone;
-    }
+    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private FloodZone floodZone;
 
-    public void setFloodZone(FloodZone floodZone) {
-        this.floodZone = floodZone;
-    }
+    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Permit permit;
 
+    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Environmental environmental;
 
     public Property() {
     }
@@ -257,5 +230,61 @@ public class Property {
 
     public void setVerificationDate(LocalDate verificationDate) {
         this.verificationDate = verificationDate;
+    }
+
+    public LandRegistry getLandRegistry() {
+        return landRegistry;
+    }
+
+    public void setLandRegistry(LandRegistry landRegistry) {
+        this.landRegistry = landRegistry;
+    }
+
+    public Ownership getOwnership() {
+        return ownership;
+    }
+
+    public void setOwnership(Ownership ownership) {
+        this.ownership = ownership;
+    }
+
+    public LegalRecord getLegalRecord() {
+        return legalRecord;
+    }
+
+    public void setLegalRecord(LegalRecord legalRecord) {
+        this.legalRecord = legalRecord;
+    }
+
+    public Zoning getZoning() {
+        return zoning;
+    }
+
+    public void setZoning(Zoning zoning) {
+        this.zoning = zoning;
+    }
+
+    public FloodZone getFloodZone() {
+        return floodZone;
+    }
+
+    public void setFloodZone(FloodZone floodZone) {
+        this.floodZone = floodZone;
+    }
+
+    public Permit getPermit() {
+        return permit;
+    }
+
+    public void setPermit(Permit permit) {
+        this.permit = permit;
+    }
+
+    public Environmental getEnvironmental() {
+        return environmental;
+    }
+
+    public void setEnvironmental(Environmental environmental) {
+        this.environmental = environmental;
     }
 }

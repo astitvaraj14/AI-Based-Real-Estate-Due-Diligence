@@ -5,15 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Seller-submitted Ownership section of the Add/Edit Property form.
+ * Seller-submitted Environmental section of the Add/Edit Property form.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OwnershipRequest {
+public class EnvironmentalRequest {
 
-    private String ownershipType;
-    private String ownershipSince;
-    private boolean ownerVerified;
+    private String environmentalRisk;
+    private String pollutionLevel;
+    private String protectedArea;
     private String remarks;
 }

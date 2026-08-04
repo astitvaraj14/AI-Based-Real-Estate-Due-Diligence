@@ -52,18 +52,16 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        System.out.println("Token = " + token);
 
         try {
 
             System.out.println("========== JWT FILTER ==========");
 
             String email = jwtService.extractEmail(token);
-            System.out.println("Email from JWT = " + email);
 
             System.out.println("Extracted Email: " + email);
 
-            User user = userRepository.findByEmail(email)   
+            User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             System.out.println("User Found: " + user.getEmail());

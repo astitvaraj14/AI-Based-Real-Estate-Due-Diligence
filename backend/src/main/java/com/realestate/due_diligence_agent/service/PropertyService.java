@@ -5,41 +5,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.realestate.due_diligence_agent.dto.AddressValidationResponse;
+import com.realestate.due_diligence_agent.exception.BadRequestException;
+import com.realestate.due_diligence_agent.exception.ResourceNotFoundException;
+import com.realestate.due_diligence_agent.dto.EnvironmentalResponse;
+import com.realestate.due_diligence_agent.dto.FloodZoneResponse;
+import com.realestate.due_diligence_agent.dto.LandRegistryResponse;
+import com.realestate.due_diligence_agent.dto.LegalRecordResponse;
+import com.realestate.due_diligence_agent.dto.OwnershipResponse;
+import com.realestate.due_diligence_agent.dto.PermitResponse;
+import com.realestate.due_diligence_agent.dto.PropertyDetailsResponse;
 import com.realestate.due_diligence_agent.dto.PropertyRequest;
 import com.realestate.due_diligence_agent.dto.VerificationResult;
-import com.realestate.due_diligence_agent.dto.LandRegistryResponse;
-import com.realestate.due_diligence_agent.dto.OwnershipResponse;
+import com.realestate.due_diligence_agent.dto.ZoningResponse;
 import com.realestate.due_diligence_agent.entity.Property;
 import com.realestate.due_diligence_agent.entity.User;
 import com.realestate.due_diligence_agent.repository.PropertyRepository;
-import com.realestate.due_diligence_agent.dto.PropertyDetailsResponse;
-import com.realestate.due_diligence_agent.dto.ZoningResponse;
-import com.realestate.due_diligence_agent.dto.LegalRecordResponse;
-import com.realestate.due_diligence_agent.dto.FloodZoneResponse;
-import com.realestate.due_diligence_agent.entity.LandRegistry;
-import com.realestate.due_diligence_agent.repository.LandRegistryRepository;
-import com.realestate.due_diligence_agent.repository.OwnershipRepository;
-import com.realestate.due_diligence_agent.entity.Ownership;
-import com.realestate.due_diligence_agent.entity.LegalRecord;
-import com.realestate.due_diligence_agent.repository.LegalRecordRepository;
-import com.realestate.due_diligence_agent.repository.ZoningRepository;
-import com.realestate.due_diligence_agent.entity.Zoning;
-import com.realestate.due_diligence_agent.repository.FloodZoneRepository;
-import com.realestate.due_diligence_agent.entity.FloodZone;
-
-
-
-
-
-
-
-
-
 
 @Service
 public class PropertyService {
@@ -52,20 +39,18 @@ public class PropertyService {
     private final LegalRecordService legalRecordService;
     private final ZoningService zoningService;
     private final FloodZoneService floodZoneService;
-    private final LandRegistryRepository landRegistryRepository;
-    private final OwnershipRepository ownershipRepository;
-    private final LegalRecordRepository legalRecordRepository;
-    private final ZoningRepository zoningRepository;
-    private final FloodZoneRepository floodZoneRepository;
+    private final PermitService permitService;
+private final EnvironmentalService environmentalService;
 
     public PropertyService(PropertyRepository propertyRepository,
             AddressValidationService addressValidationService,
             VerificationService verificationService,
             LandRegistryService landRegistryService,
             OwnershipService ownershipService, LegalRecordService legalRecordService,
-                           ZoningService zoningService, FloodZoneService floodZoneService,
-                           LandRegistryRepository landRegistryRepository,
-                           OwnershipRepository ownershipRepository, LegalRecordRepository legalRecordRepository, ZoningRepository zoningRepository, FloodZoneRepository floodZoneRepository) {
+                           ZoningService zoningService,
+FloodZoneService floodZoneService,
+PermitService permitService,
+EnvironmentalService environmentalService     ) {
 
         this.propertyRepository = propertyRepository;
         this.addressValidationService = addressValidationService;
@@ -75,11 +60,8 @@ public class PropertyService {
         this.legalRecordService = legalRecordService;
         this.zoningService = zoningService;
         this.floodZoneService = floodZoneService;
-        this.landRegistryRepository = landRegistryRepository;
-        this.ownershipRepository = ownershipRepository;
-        this.legalRecordRepository = legalRecordRepository;
-        this.zoningRepository = zoningRepository;
-        this.floodZoneRepository = floodZoneRepository;
+        this.permitService = permitService;
+        this.environmentalService = environmentalService;
 
     }
 
@@ -97,13 +79,14 @@ public class PropertyService {
     // ==========================================
     // Add Property
     // ==========================================
+    @Transactional
     public Property addProperty(PropertyRequest request) {
 
         AddressValidationResponse validation
                 = addressValidationService.validateAddress(request.getAddress());
 
         if (!validation.isValid()) {
-            throw new RuntimeException(validation.getMessage());
+            throw new BadRequestException(validation.getMessage());
         }
 
         User loggedInUser = getLoggedInUser();
@@ -126,121 +109,54 @@ public class PropertyService {
         property.setRegistrationDate(LocalDate.now());
         property.setVerificationDate(null);
 
-        Property savedProperty = propertyRepository.save(property);
+        // Every due-diligence section the seller filled in on Add Property is
+        // attached to the property here. Property is the cascade root, so
+        // saving it below persists all of these child rows in one go.
         if (request.getLandRegistry() != null) {
-            LandRegistry landRegistry = new LandRegistry();
-
-            landRegistry.setRegistryNumber(
-                    request.getLandRegistry().getRegistryNumber());
-
-            landRegistry.setRegistryStatus(
-                    request.getLandRegistry().getRegistryStatus());
-
-            landRegistry.setRegistryOffice(
-                    request.getLandRegistry().getRegistryOffice());
-
-            landRegistry.setTitleVerified(
-                    request.getLandRegistry().getTitleVerified());
-
-            landRegistry.setLastUpdated(
-                    request.getLandRegistry().getLastUpdated());
-
-            landRegistry.setProperty(savedProperty);
-            landRegistryRepository.save(landRegistry);        }
-
+            property.setLandRegistry(
+                    landRegistryService.buildFromRequest(request.getLandRegistry(), property));
+        }
         if (request.getOwnership() != null) {
-
-            Ownership ownership = new Ownership();
-
-            ownership.setOwnerName(
-                    request.getOwnership().getOwnerName());
-
-            ownership.setOwnerVerified(
-                    request.getOwnership().getOwnerVerified());
-
-            ownership.setOwnershipType(
-                    request.getOwnership().getOwnershipType());
-
-            ownership.setOwnershipSince(
-                    request.getOwnership().getOwnershipSince());
-
-            ownership.setRemarks(
-                    request.getOwnership().getRemarks());
-
-            ownership.setProperty(savedProperty);
-
-            ownershipRepository.save(ownership);
+            property.setOwnership(
+                    ownershipService.buildFromRequest(request.getOwnership(), property));
         }
         if (request.getLegalRecord() != null) {
-
-            LegalRecord legalRecord = new LegalRecord();
-
-            legalRecord.setCourtCases(
-                    request.getLegalRecord().getCourtCases());
-
-            legalRecord.setCaseStatus(
-                    request.getLegalRecord().getCaseStatus());
-
-            legalRecord.setRemarks(
-                    request.getLegalRecord().getRemarks());
-
-            legalRecord.setProperty(savedProperty);
-
-            legalRecordRepository.save(legalRecord);
+            property.setLegalRecord(
+                    legalRecordService.buildFromRequest(request.getLegalRecord(), property));
         }
         if (request.getZoning() != null) {
-
-            Zoning zoning = new Zoning();
-
-            zoning.setZoneType(
-                    request.getZoning().getZoneType());
-
-            zoning.setConstructionAllowed(
-                    request.getZoning().getConstructionAllowed());
-
-            zoning.setAuthority(
-                    request.getZoning().getAuthority());
-
-            zoning.setProperty(savedProperty);
-
-            zoningRepository.save(zoning);
+            property.setZoning(
+                    zoningService.buildFromRequest(request.getZoning(), property));
         }
         if (request.getFloodZone() != null) {
-
-            FloodZone floodZone = new FloodZone();
-
-            floodZone.setZoneType(
-                    request.getFloodZone().getZoneType());
-
-            floodZone.setRiskLevel(
-                    request.getFloodZone().getRiskLevel());
-
-            floodZone.setInsuranceRequired(
-                    request.getFloodZone().getInsuranceRequired());
-
-            floodZone.setAuthority(
-                    request.getFloodZone().getAuthority());
-
-            floodZone.setProperty(savedProperty);
-
-            floodZoneRepository.save(floodZone);
+            property.setFloodZone(
+                    floodZoneService.buildFromRequest(request.getFloodZone(), property));
         }
-        return savedProperty;
+        if (request.getPermit() != null) {
+            property.setPermit(
+                    permitService.buildFromRequest(request.getPermit(), property));
+        }
+        if (request.getEnvironmental() != null) {
+            property.setEnvironmental(
+                    environmentalService.buildFromRequest(request.getEnvironmental(), property));
+        }
 
+        return propertyRepository.save(property);
     }
 
     // ==========================================
     // Verify Property
     // ==========================================
+    @Transactional
     public VerificationResult verifyProperty(Long propertyId) {
 
         User loggedInUser = getLoggedInUser();
 
         Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
         if (!property.getUser().getId().equals(loggedInUser.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
         VerificationResult result = verificationService.verify(property);
@@ -273,7 +189,7 @@ public class PropertyService {
         System.out.println("Logged In Email   : " + user.getEmail());
 
         Property property = propertyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
         System.out.println("Property ID       : " + property.getId());
         System.out.println("Property Owner ID : " + property.getUser().getId());
@@ -281,7 +197,7 @@ public class PropertyService {
 
         if (!property.getUser().getId().equals(user.getId())) {
             System.out.println("ACCESS DENIED");
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
         System.out.println("ACCESS GRANTED");
@@ -292,18 +208,19 @@ public class PropertyService {
     // ==========================================
     // Update Property
     // ==========================================
+    @Transactional
     public Property updateProperty(Long id, PropertyRequest request) {
 
         User user = getLoggedInUser();
 
         Property property = propertyRepository.findByIdAndUser(id, user)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
         AddressValidationResponse validation
                 = addressValidationService.validateAddress(request.getAddress());
 
         if (!validation.isValid()) {
-            throw new RuntimeException(validation.getMessage());
+            throw new BadRequestException(validation.getMessage());
         }
 
         property.setTitle(request.getTitle());
@@ -314,6 +231,67 @@ public class PropertyService {
         property.setPrice(request.getPrice());
         property.setArea(request.getArea());
         property.setOwnerName(request.getOwnerName());
+
+        // A section is only touched when it is present in the request body.
+        // When present, an existing child row is updated in place; only a
+        // brand-new section creates a new row. This is what keeps Edit
+        // Property from ever inserting duplicate due-diligence records.
+        if (request.getLandRegistry() != null) {
+            if (property.getLandRegistry() == null) {
+                property.setLandRegistry(
+                        landRegistryService.buildFromRequest(request.getLandRegistry(), property));
+            } else {
+                landRegistryService.applyRequest(property.getLandRegistry(), request.getLandRegistry());
+            }
+        }
+        if (request.getOwnership() != null) {
+            if (property.getOwnership() == null) {
+                property.setOwnership(
+                        ownershipService.buildFromRequest(request.getOwnership(), property));
+            } else {
+                ownershipService.applyRequest(property.getOwnership(), request.getOwnership());
+            }
+        }
+        if (request.getLegalRecord() != null) {
+            if (property.getLegalRecord() == null) {
+                property.setLegalRecord(
+                        legalRecordService.buildFromRequest(request.getLegalRecord(), property));
+            } else {
+                legalRecordService.applyRequest(property.getLegalRecord(), request.getLegalRecord());
+            }
+        }
+        if (request.getZoning() != null) {
+            if (property.getZoning() == null) {
+                property.setZoning(
+                        zoningService.buildFromRequest(request.getZoning(), property));
+            } else {
+                zoningService.applyRequest(property.getZoning(), request.getZoning());
+            }
+        }
+        if (request.getFloodZone() != null) {
+            if (property.getFloodZone() == null) {
+                property.setFloodZone(
+                        floodZoneService.buildFromRequest(request.getFloodZone(), property));
+            } else {
+                floodZoneService.applyRequest(property.getFloodZone(), request.getFloodZone());
+            }
+        }
+        if (request.getPermit() != null) {
+            if (property.getPermit() == null) {
+                property.setPermit(
+                        permitService.buildFromRequest(request.getPermit(), property));
+            } else {
+                permitService.applyRequest(property.getPermit(), request.getPermit());
+            }
+        }
+        if (request.getEnvironmental() != null) {
+            if (property.getEnvironmental() == null) {
+                property.setEnvironmental(
+                        environmentalService.buildFromRequest(request.getEnvironmental(), property));
+            } else {
+                environmentalService.applyRequest(property.getEnvironmental(), request.getEnvironmental());
+            }
+        }
 
         return propertyRepository.save(property);
     }
@@ -329,12 +307,12 @@ public class PropertyService {
         System.out.println("Logged In User : " + user.getEmail());
 
         Property property = propertyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
         System.out.println("Property Owner : " + property.getUser().getEmail());
 
         if (!property.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
         propertyRepository.delete(property);
@@ -398,32 +376,40 @@ public class PropertyService {
     //get property by id
     //=========================
 
+    @Transactional(readOnly = true)
     public PropertyDetailsResponse getPropertyDetailsById(Long id) {
 
         User loggedInUser = getLoggedInUser();
 
         Property property = propertyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
         if (!property.getUser().getId().equals(loggedInUser.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
+        // Every section below is read straight off the Property entity that
+        // was just loaded from PostgreSQL — no mock/generated values.
         LandRegistryResponse landRegistry =
                 landRegistryService.getRegistryDetails(property);
+
+        OwnershipResponse ownership =
+                ownershipService.getOwnershipDetails(property);
 
         LegalRecordResponse legalRecord =
                 legalRecordService.getLegalRecord(property);
 
         ZoningResponse zoning =
-                zoningService.getZoning(property);Zoning zoningEntity = new Zoning();
+                zoningService.getZoning(property);
 
         FloodZoneResponse floodZone =
                 floodZoneService.getFloodZone(property);
 
-        OwnershipResponse ownership =
-                ownershipService.getOwnershipDetails(property);
+        PermitResponse permit =
+                permitService.getPermit(property);
 
+        EnvironmentalResponse environmental =
+                environmentalService.getEnvironmental(property);
 
         return new PropertyDetailsResponse(
                 property.getId(),
@@ -443,7 +429,9 @@ public class PropertyService {
                 ownership,
                 legalRecord,
                 zoning,
-                floodZone
+                floodZone,
+                permit,
+                environmental
         );
     }
 }

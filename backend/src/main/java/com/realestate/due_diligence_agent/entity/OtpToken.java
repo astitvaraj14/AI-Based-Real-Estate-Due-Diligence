@@ -1,13 +1,7 @@
 package com.realestate.due_diligence_agent.entity;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "otp_tokens")
@@ -32,19 +26,15 @@ public class OtpToken {
     public OtpToken() {
     }
 
-    public OtpToken(String email, String otp, LocalDateTime expiryTime, boolean verified) {
+    public OtpToken(String email, String otp, LocalDateTime expiryTime) {
         this.email = email;
         this.otp = otp;
         this.expiryTime = expiryTime;
-        this.verified = verified;
+        this.verified = false;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getEmail() {

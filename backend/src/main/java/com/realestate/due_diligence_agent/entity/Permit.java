@@ -11,18 +11,20 @@ import jakarta.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "zoning")
-public class Zoning {
+@Table(name = "permit")
+public class Permit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String zoneType;
+    private String permitNumber;
 
-    private String constructionAllowed;
+    private String permitType;
 
-    private String authority;
+    private String permitStatus;
+
+    private String issuingAuthority;
 
     // Owning side of the link back to Property. @JsonIgnore stops Jackson
     // from walking Property -> this -> Property -> ... in an infinite loop
@@ -32,7 +34,7 @@ public class Zoning {
     @JsonIgnore
     private Property property;
 
-    public Zoning() {
+    public Permit() {
     }
 
     public Long getId() {
@@ -43,28 +45,36 @@ public class Zoning {
         this.id = id;
     }
 
-    public String getZoneType() {
-        return zoneType;
+    public String getPermitNumber() {
+        return permitNumber;
     }
 
-    public void setZoneType(String zoneType) {
-        this.zoneType = zoneType;
+    public void setPermitNumber(String permitNumber) {
+        this.permitNumber = permitNumber;
     }
 
-    public String getConstructionAllowed() {
-        return constructionAllowed;
+    public String getPermitType() {
+        return permitType;
     }
 
-    public void setConstructionAllowed(String constructionAllowed) {
-        this.constructionAllowed = constructionAllowed;
+    public void setPermitType(String permitType) {
+        this.permitType = permitType;
     }
 
-    public String getAuthority() {
-        return authority;
+    public String getPermitStatus() {
+        return permitStatus;
     }
 
-    public void setAuthority(String authority) {
-        this.authority = authority;
+    public void setPermitStatus(String permitStatus) {
+        this.permitStatus = permitStatus;
+    }
+
+    public String getIssuingAuthority() {
+        return issuingAuthority;
+    }
+
+    public void setIssuingAuthority(String issuingAuthority) {
+        this.issuingAuthority = issuingAuthority;
     }
 
     public Property getProperty() {

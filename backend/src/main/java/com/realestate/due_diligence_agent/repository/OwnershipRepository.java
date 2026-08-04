@@ -1,9 +1,12 @@
 package com.realestate.due_diligence_agent.repository;
 
-import com.realestate.due_diligence_agent.entity.Ownership;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
-@Repository
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.realestate.due_diligence_agent.entity.Ownership;
+
 public interface OwnershipRepository extends JpaRepository<Ownership, Long> {
+
+    Optional<Ownership> findByPropertyId(Long propertyId);
 }

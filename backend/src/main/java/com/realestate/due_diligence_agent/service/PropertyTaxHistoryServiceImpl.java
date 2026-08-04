@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.realestate.due_diligence_agent.entity.Property;
 import com.realestate.due_diligence_agent.entity.PropertyTaxHistory;
+import com.realestate.due_diligence_agent.exception.ResourceNotFoundException;
 import com.realestate.due_diligence_agent.repository.PropertyRepository;
 import com.realestate.due_diligence_agent.repository.PropertyTaxHistoryRepository;
 
@@ -32,7 +33,7 @@ public class PropertyTaxHistoryServiceImpl implements PropertyTaxHistoryService 
     public PropertyTaxHistory addTaxHistory(Long propertyId, PropertyTaxHistory taxHistory) {
 
         Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
         taxHistory.setProperty(property);
 
@@ -43,7 +44,7 @@ public class PropertyTaxHistoryServiceImpl implements PropertyTaxHistoryService 
     public PropertyTaxHistory updateTaxHistory(Long id, PropertyTaxHistory updatedTaxHistory) {
 
         PropertyTaxHistory existing = taxHistoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tax history not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Tax history not found"));
 
         existing.setTaxYear(updatedTaxHistory.getTaxYear());
         existing.setTaxAmount(updatedTaxHistory.getTaxAmount());

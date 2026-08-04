@@ -11,18 +11,20 @@ import jakarta.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "zoning")
-public class Zoning {
+@Table(name = "environmental")
+public class Environmental {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String zoneType;
+    private String environmentalRisk;
 
-    private String constructionAllowed;
+    private String pollutionLevel;
 
-    private String authority;
+    private String protectedArea;
+
+    private String remarks;
 
     // Owning side of the link back to Property. @JsonIgnore stops Jackson
     // from walking Property -> this -> Property -> ... in an infinite loop
@@ -32,7 +34,7 @@ public class Zoning {
     @JsonIgnore
     private Property property;
 
-    public Zoning() {
+    public Environmental() {
     }
 
     public Long getId() {
@@ -43,28 +45,36 @@ public class Zoning {
         this.id = id;
     }
 
-    public String getZoneType() {
-        return zoneType;
+    public String getEnvironmentalRisk() {
+        return environmentalRisk;
     }
 
-    public void setZoneType(String zoneType) {
-        this.zoneType = zoneType;
+    public void setEnvironmentalRisk(String environmentalRisk) {
+        this.environmentalRisk = environmentalRisk;
     }
 
-    public String getConstructionAllowed() {
-        return constructionAllowed;
+    public String getPollutionLevel() {
+        return pollutionLevel;
     }
 
-    public void setConstructionAllowed(String constructionAllowed) {
-        this.constructionAllowed = constructionAllowed;
+    public void setPollutionLevel(String pollutionLevel) {
+        this.pollutionLevel = pollutionLevel;
     }
 
-    public String getAuthority() {
-        return authority;
+    public String getProtectedArea() {
+        return protectedArea;
     }
 
-    public void setAuthority(String authority) {
-        this.authority = authority;
+    public void setProtectedArea(String protectedArea) {
+        this.protectedArea = protectedArea;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 
     public Property getProperty() {

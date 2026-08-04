@@ -4,11 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Seller-submitted Flood Zone section of the Add/Edit Property form.
+ */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-
+@AllArgsConstructor
 public class FloodZoneRequest {
+
     private String zoneType;
     private String riskLevel;
     private String insuranceRequired;

@@ -7,7 +7,6 @@ public class RegisterRequest {
     private String fullName;
     private String email;
     private String password;
-    private String mobileNumber;
     private Role role;
 
     public String getFullName() {
@@ -32,14 +31,6 @@ public class RegisterRequest {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getMobileNumber() {
-        return mobileNumber;
-    }
-
-    public void setMobileNumber(String mobileNumber) {
-        this.mobileNumber = mobileNumber;
     }
 
     public Role getRole() {

@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Seller-submitted Zoning section of the Add/Edit Property form.
+ */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-
-public class ZoningRequest{
+@AllArgsConstructor
+public class ZoningRequest {
 
     private String zoneType;
     private String constructionAllowed;

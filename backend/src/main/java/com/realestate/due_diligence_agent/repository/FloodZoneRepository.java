@@ -1,9 +1,12 @@
 package com.realestate.due_diligence_agent.repository;
 
-import com.realestate.due_diligence_agent.entity.FloodZone;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
-@Repository
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.realestate.due_diligence_agent.entity.FloodZone;
+
 public interface FloodZoneRepository extends JpaRepository<FloodZone, Long> {
+
+    Optional<FloodZone> findByPropertyId(Long propertyId);
 }

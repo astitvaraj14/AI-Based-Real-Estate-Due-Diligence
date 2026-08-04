@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.realestate.due_diligence_agent.dto.PermitResponse;
+import com.realestate.due_diligence_agent.dto.EnvironmentalResponse;
 
 @Data
 @NoArgsConstructor
@@ -40,4 +42,7 @@ public class PropertyDetailsResponse {
 
     // Flood Records
     private FloodZoneResponse floodZone;
+    private PermitResponse permit;
+
+private EnvironmentalResponse environmental;
 }
