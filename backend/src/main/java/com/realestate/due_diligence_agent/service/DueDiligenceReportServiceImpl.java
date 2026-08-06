@@ -67,7 +67,7 @@ public class DueDiligenceReportServiceImpl implements DueDiligenceReportService 
 
         // Ownership
         ownershipRepository.findByPropertyId(propertyId).ifPresent(ownership -> {
-            response.setOwnerVerified(ownership.getOwnerVerified());
+            response.setOwnerVerified(ownership.isOwnerVerified());
             response.setOwnershipType(ownership.getOwnershipType());
             response.setOwnershipRemarks(ownership.getRemarks());
         });
