@@ -20,8 +20,12 @@ export default function DashboardLayout() {
     const user = JSON.parse(userStr);
     
     // Connect to WebSocket
+    // Derive WS URL from API URL (e.g. replace /api with /ws)
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+    const wsUrl = apiUrl.replace("/api", "/ws");
+
     const client = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
+      webSocketFactory: () => new SockJS(wsUrl),
       onConnect: () => {
         console.log("Connected to Real-time Notification Server");
         client.subscribe(`/topic/notifications/${user.id}`, (msg) => {

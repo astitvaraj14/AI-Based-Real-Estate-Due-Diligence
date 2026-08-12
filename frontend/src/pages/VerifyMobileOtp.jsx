@@ -33,7 +33,7 @@ export default function VerifyMobileOtp() {
       setLoading(true);
 
       const response = await axios.post(
-        "http://localhost:8080/api/auth/mobile/verify-otp",
+        `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/auth/mobile/verify-otp`,
         {
           mobileNumber,
           otp: otp.trim(),

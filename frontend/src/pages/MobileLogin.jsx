@@ -28,8 +28,8 @@ export default function MobileLogin() {
     try {
       setLoading(true);
 
-      await axios.post(
-        "http://localhost:8080/api/auth/mobile/send-otp",
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/auth/mobile/send-otp`,
         {
           mobileNumber,
         }
