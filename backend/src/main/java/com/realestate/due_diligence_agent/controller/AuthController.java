@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.realestate.due_diligence_agent.dto.AuthResponse;
 import com.realestate.due_diligence_agent.dto.ForgotPasswordRequest;
+import com.realestate.due_diligence_agent.dto.GoogleAuthRequest;
 import com.realestate.due_diligence_agent.dto.LoginRequest;
 import com.realestate.due_diligence_agent.dto.RegisterRequest;
 import com.realestate.due_diligence_agent.dto.ResetPasswordRequest;
@@ -40,6 +41,12 @@ public class AuthController {
         System.out.println("========== TOKEN ==========");
         System.out.println(response.getToken());
 
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<AuthResponse> googleLogin(@RequestBody GoogleAuthRequest request) {
+        AuthResponse response = userService.googleLogin(request);
         return ResponseEntity.ok(response);
     }
 

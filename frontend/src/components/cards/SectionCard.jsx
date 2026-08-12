@@ -12,19 +12,20 @@ export default function SectionCard({
     <motion.section
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -4 }}
       transition={{ duration: 0.25 }}
       className={clsx(
-        "rounded-2xl border border-slate-200 bg-white shadow-sm",
+        "rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-colors",
         className
       )}
     >
       {(title || action) && (
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 px-6 py-5">
 
           <div>
 
             {title && (
-              <h2 className="text-lg font-semibold text-slate-900">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white transition-colors">
                 {title}
               </h2>
             )}

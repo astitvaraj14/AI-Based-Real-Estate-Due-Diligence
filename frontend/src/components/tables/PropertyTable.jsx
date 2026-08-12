@@ -35,7 +35,7 @@ export default function PropertyTable({
 
           <thead>
 
-            <tr className="border-b border-slate-200 text-left text-sm text-slate-500">
+            <tr className="border-b border-slate-200 dark:border-slate-800 text-left text-sm text-slate-500 dark:text-slate-400">
 
               <th className="py-4">Property</th>
 
@@ -76,18 +76,18 @@ export default function PropertyTable({
 
               <tr
                 key={property.id}
-                className="border-b border-slate-100 hover:bg-slate-50 transition"
+                className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition"
               >
 
                 <td className="py-5">
 
                   <div>
 
-                    <p className="font-semibold text-slate-900">
+                    <p className="font-semibold text-slate-900 dark:text-slate-100">
                       {property.title}
                     </p>
 
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
                       {property.address}
                     </p>
 
@@ -110,10 +110,10 @@ export default function PropertyTable({
                       py-1
                       text-xs
                       font-semibold
-                      ${badgeClass(property.verificationStatus)}
+                      ${badgeClass(property.verificationStatus || "Pending")}
                     `}
                   >
-                    {property.verificationStatus}
+                    {property.verificationStatus || "Pending"}
                   </span>
 
                 </td>
@@ -121,7 +121,7 @@ export default function PropertyTable({
                 <td>
 
                   <span className="font-semibold text-slate-700">
-                    {property.verificationScore}%
+                    {property.verificationScore != null ? `${property.verificationScore}%` : "0%"}
                   </span>
 
                 </td>
@@ -134,7 +134,7 @@ export default function PropertyTable({
                       onClick={() =>
                         navigate(`/properties/${property.id}`)
                       }
-                      className="rounded-lg p-2 hover:bg-slate-100"
+                      className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400"
                     >
                       <Eye size={18} />
                     </button>
@@ -143,14 +143,14 @@ export default function PropertyTable({
                       onClick={() =>
                         navigate(`/properties/edit/${property.id}`)
                       }
-                      className="rounded-lg p-2 hover:bg-slate-100"
+                      className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400"
                     >
                       <Pencil size={18} />
                     </button>
 
                     <button
                       onClick={() => onDelete?.(property.id)}
-                      className="rounded-lg p-2 text-red-500 hover:bg-red-50"
+                      className="rounded-lg p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
                     >
                       <Trash2 size={18} />
                     </button>

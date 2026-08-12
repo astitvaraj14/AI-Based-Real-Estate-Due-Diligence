@@ -68,9 +68,9 @@ function AddressValidation() {
                 VALIDATION CARD
             =========================== */}
 
-            <div className="bg-white rounded-2xl shadow-lg p-8 max-w-4xl">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg p-8 max-w-4xl">
 
-                <label className="block text-lg font-semibold mb-3">
+                <label className="block text-lg font-semibold mb-3 text-slate-900 dark:text-white">
 
                     Property Address
 
@@ -78,7 +78,7 @@ function AddressValidation() {
 
                 <textarea
                     rows="4"
-                    className="w-full border rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter complete property address..."
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
@@ -105,16 +105,16 @@ function AddressValidation() {
                     <div
                         className={`mt-8 rounded-xl border p-6 ${
                             result.valid
-                                ? "bg-green-50 border-green-500"
-                                : "bg-red-50 border-red-500"
+                                ? "bg-green-50 dark:bg-green-900/20 border-green-500 dark:border-green-800"
+                                : "bg-red-50 dark:bg-red-900/20 border-red-500 dark:border-red-800"
                         }`}
                     >
 
                         <h2
                             className={`text-2xl font-bold ${
                                 result.valid
-                                    ? "text-green-700"
-                                    : "text-red-700"
+                                    ? "text-green-700 dark:text-green-400"
+                                    : "text-red-700 dark:text-red-400"
                             }`}
                         >
 
@@ -124,7 +124,7 @@ function AddressValidation() {
 
                         </h2>
 
-                        <p className="mt-4 text-gray-700">
+                        <p className="mt-4 text-gray-700 dark:text-gray-300">
 
                             {result.message}
 

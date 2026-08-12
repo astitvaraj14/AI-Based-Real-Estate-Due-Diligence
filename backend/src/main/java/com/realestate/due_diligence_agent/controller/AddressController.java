@@ -22,6 +22,6 @@ public class AddressController {
     public AddressValidationResponse validate(
             @RequestParam String address) {
 
-        return validationService.validateAddress(address);
+        return validationService.validateAddress(address, null, null);
     }
 }

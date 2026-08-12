@@ -39,6 +39,10 @@ public class Property {
 
     private String ownerName;
 
+    private Double latitude;
+
+    private Double longitude;
+
     // Relationship with User
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -52,6 +56,9 @@ public class Property {
     private String verificationStatus;
 
     private Double verificationScore;
+
+    @jakarta.persistence.Column(columnDefinition = "TEXT")
+    private String aiReport;
 
     private LocalDate registrationDate;
 
@@ -184,6 +191,22 @@ public class Property {
         this.ownerName = ownerName;
     }
 
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
     public User getUser() {
         return user;
     }
@@ -214,6 +237,14 @@ public class Property {
 
     public void setVerificationScore(Double verificationScore) {
         this.verificationScore = verificationScore;
+    }
+
+    public String getAiReport() {
+        return aiReport;
+    }
+
+    public void setAiReport(String aiReport) {
+        this.aiReport = aiReport;
     }
 
     public LocalDate getRegistrationDate() {

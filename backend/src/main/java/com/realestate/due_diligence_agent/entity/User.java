@@ -30,6 +30,21 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(name = "mobile_verified", nullable = false)
+    private boolean mobileVerified = false;
+
+    @Column(nullable = false)
+    private String provider = "LOCAL";
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "joined_date", updatable = false)
+    private java.time.LocalDate joinedDate;
+
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
+
     public User() {
     }
 
@@ -67,5 +82,39 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public java.time.LocalDate getJoinedDate() {
+        if (this.joinedDate == null) {
+            return java.time.LocalDate.now();
+        }
+        return joinedDate;
+    }
+
+    public void setJoinedDate(java.time.LocalDate joinedDate) {
+        this.joinedDate = joinedDate;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    @jakarta.persistence.PrePersist
+    protected void onCreate() {
+        if (this.joinedDate == null) {
+            this.joinedDate = java.time.LocalDate.now();
+        }
     }
 }

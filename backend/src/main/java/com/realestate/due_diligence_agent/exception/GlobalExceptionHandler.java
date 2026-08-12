@@ -111,7 +111,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return buildResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "An unexpected error occurred. Please try again later.",
+                "An unexpected error occurred. Please try again later. Details: " + ex.getMessage(),
                 request
         );
     }

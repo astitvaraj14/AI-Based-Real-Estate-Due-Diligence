@@ -6,7 +6,9 @@ import api from "../../services/api";
 import DashboardStats from "../../components/dashboard/DashboardStats";
 import VerificationChart from "../../components/charts/VerificationChart";
 import RecentProperties from "../../components/dashboard/RecentProperties";
-import RecentActivity from "../../components/dashboard/RecentActivity";
+import ActivityTimeline from "../../components/dashboard/ActivityTimeline";
+import PropertyMap from "../../components/dashboard/PropertyMap";
+import MarketTrendsWidget from "../../components/dashboard/MarketTrendsWidget";
 
 import { FullPageLoader } from "../../components/ui/Loader";
 import Button from "../../components/ui/Button";
@@ -40,6 +42,19 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
       setRefreshing(false);
+    }
+  }
+
+  async function handleDeleteProperty(id) {
+    if (window.confirm("Are you sure you want to delete this property?")) {
+      try {
+        await api.delete(`/properties/${id}`);
+        // Refresh dashboard
+        loadDashboard(true);
+      } catch (err) {
+        console.error(err);
+        alert("Failed to delete property.");
+      }
     }
   }
 
@@ -93,11 +108,11 @@ export default function Dashboard() {
 
         <div>
 
-          <h1 className="text-3xl font-bold text-slate-900">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
             Dashboard
           </h1>
 
-          <p className="mt-1 text-slate-500">
+          <p className="mt-1 text-slate-500 dark:text-slate-400">
             Monitor property verification, portfolio status and recent activity.
           </p>
 
@@ -125,22 +140,29 @@ export default function Dashboard() {
 
       {/* Verification Chart */}
 
-      <VerificationChart dashboard={dashboard} />
+      <div className="grid gap-8 xl:grid-cols-12">
+        <div className="xl:col-span-6">
+            <VerificationChart dashboard={dashboard} />
+        </div>
+        <div className="xl:col-span-6">
+            <PropertyMap />
+        </div>
+      </div>
 
       {/* Bottom Grid */}
 
       <div className="grid gap-8 xl:grid-cols-12">
 
-        <div className="xl:col-span-8">
+        <div className="xl:col-span-8 space-y-8">
+          <MarketTrendsWidget />
           <RecentProperties
             properties={dashboard?.recentProperties ?? []}
+            onDelete={handleDeleteProperty}
           />
         </div>
 
         <div className="xl:col-span-4">
-          <RecentActivity
-            properties={dashboard?.recentProperties ?? []}
-          />
+          <ActivityTimeline />
         </div>
 
       </div>

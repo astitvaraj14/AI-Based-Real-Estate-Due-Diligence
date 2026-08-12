@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
 
 /* ---------- Base ---------- */
 
@@ -18,8 +19,7 @@ body {
     "Segoe UI",
     sans-serif;
 
-  background: #f8fafc;
-  color: #0f172a;
+  @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100;
 }
 
 * {

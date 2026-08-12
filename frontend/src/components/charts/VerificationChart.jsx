@@ -82,13 +82,13 @@ import {
   
           <div className="space-y-5">
   
-            <div className="rounded-xl border border-slate-200 p-5">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-5">
   
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 Verification Rate
               </p>
   
-              <h2 className="mt-2 text-4xl font-bold text-slate-900">
+              <h2 className="mt-2 text-4xl font-bold text-slate-900 dark:text-white">
                 {verificationRate}%
               </h2>
   
@@ -96,37 +96,37 @@ import {
   
             <div className="grid grid-cols-3 gap-4">
   
-              <div className="rounded-xl bg-emerald-50 p-4">
+              <div className="rounded-xl bg-emerald-50 dark:bg-emerald-900/20 p-4">
   
-                <p className="text-xs text-emerald-700">
+                <p className="text-xs text-emerald-700 dark:text-emerald-400">
                   Verified
                 </p>
   
-                <h3 className="mt-2 text-2xl font-bold text-emerald-700">
+                <h3 className="mt-2 text-2xl font-bold text-emerald-700 dark:text-emerald-400">
                   {dashboard?.verifiedProperties}
                 </h3>
   
               </div>
   
-              <div className="rounded-xl bg-amber-50 p-4">
+              <div className="rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4">
   
-                <p className="text-xs text-amber-700">
+                <p className="text-xs text-amber-700 dark:text-amber-400">
                   Pending
                 </p>
   
-                <h3 className="mt-2 text-2xl font-bold text-amber-700">
+                <h3 className="mt-2 text-2xl font-bold text-amber-700 dark:text-amber-400">
                   {dashboard?.pendingReviews}
                 </h3>
   
               </div>
   
-              <div className="rounded-xl bg-red-50 p-4">
+              <div className="rounded-xl bg-red-50 dark:bg-red-900/20 p-4">
   
-                <p className="text-xs text-red-700">
+                <p className="text-xs text-red-700 dark:text-red-400">
                   Rejected
                 </p>
   
-                <h3 className="mt-2 text-2xl font-bold text-red-700">
+                <h3 className="mt-2 text-2xl font-bold text-red-700 dark:text-red-400">
                   {dashboard?.rejectedProperties}
                 </h3>
   
@@ -134,14 +134,14 @@ import {
   
             </div>
   
-            <div className="rounded-xl border border-slate-200 p-5">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-5">
   
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 Average Verification Score
               </p>
   
-              <h2 className="mt-2 text-3xl font-bold text-slate-900">
-                {dashboard?.averageVerificationScore ?? 0}%
+              <h2 className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
+                {dashboard?.averageVerificationScore ? Math.round(dashboard.averageVerificationScore) : 0}%
               </h2>
   
             </div>

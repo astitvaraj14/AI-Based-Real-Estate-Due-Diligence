@@ -47,8 +47,8 @@ export default function StatCard({
       className={`
         rounded-2xl
         border
-        ${theme.border}
-        bg-white
+        ${theme.border} dark:border-slate-800
+        bg-white dark:bg-slate-900
         p-6
         shadow-sm
         transition
@@ -59,11 +59,11 @@ export default function StatCard({
 
         <div>
 
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             {title}
           </p>
 
-          <h2 className="mt-4 text-4xl font-bold text-slate-900">
+          <h2 className="mt-4 text-4xl font-bold text-slate-900 dark:text-white">
             {value}
           </h2>
 
@@ -90,7 +90,7 @@ export default function StatCard({
             items-center
             justify-center
             rounded-2xl
-            ${theme.bg}
+            ${theme.bg} dark:bg-slate-800/50
           `}
         >
           {Icon && (

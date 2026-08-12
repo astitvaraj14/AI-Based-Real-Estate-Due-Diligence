@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { useAuth } from "../../context/AuthContext";
+
 import api from "../../services/api";
 
 import Button from "../../components/ui/Button";
@@ -24,6 +26,9 @@ export default function PropertyDetails() {
 
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const { user } = useAuth();
+  const isAdmin = user?.role?.includes("ADMIN");
 
   useEffect(() => {
     loadProperty();
@@ -40,6 +45,16 @@ export default function PropertyDetails() {
     }
   }
 
+  async function handleUpdateStatus(status, score) {
+    if (!window.confirm(`Are you sure you want to mark this property as ${status}?`)) return;
+    try {
+      await api.put(`/properties/${id}/status`, { status, score });
+      loadProperty();
+    } catch (err) {
+      alert("Failed to update property status");
+    }
+  }
+
   if (loading) {
     return (
       <FullPageLoader title="Loading Property..." />
@@ -47,7 +62,7 @@ export default function PropertyDetails() {
   }
 
   const statusIcon = () => {
-    switch (property.verificationStatus) {
+    switch ((property.verificationStatus || "").toUpperCase()) {
       case "VERIFIED":
         return <BadgeCheck className="text-emerald-600" />;
 
@@ -72,14 +87,34 @@ export default function PropertyDetails() {
           Back
         </Button>
 
-        <Button
-          leftIcon={<Pencil size={18} />}
-          onClick={() =>
-            navigate(`/properties/edit/${id}`)
-          }
-        >
-          Edit Property
-        </Button>
+        <div className="flex items-center gap-3">
+          {isAdmin && (
+            <>
+              <Button
+                variant="outline"
+                className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-900/20"
+                onClick={() => handleUpdateStatus("Rejected", 0)}
+              >
+                Reject
+              </Button>
+              <Button
+                className="bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700 border-none"
+                onClick={() => handleUpdateStatus("Verified", 100)}
+              >
+                Verify
+              </Button>
+            </>
+          )}
+
+          <Button
+            leftIcon={<Pencil size={18} />}
+            onClick={() =>
+              navigate(`/properties/edit/${id}`)
+            }
+          >
+            Edit
+          </Button>
+        </div>
 
       </div>
 
@@ -89,22 +124,22 @@ export default function PropertyDetails() {
 
           <div>
 
-            <h1 className="text-3xl font-bold">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
               {property.title}
             </h1>
 
-            <p className="mt-2 text-slate-500">
+            <p className="mt-2 text-slate-500 dark:text-slate-400">
               {property.address}
             </p>
 
           </div>
 
-          <div className="flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2">
+          <div className="flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800 px-4 py-2">
 
             {statusIcon()}
 
-            <span className="font-medium">
-              {property.verificationStatus}
+            <span className="font-medium text-slate-900 dark:text-white">
+              {property.verificationStatus || "Pending"}
             </span>
 
           </div>
@@ -183,7 +218,7 @@ export default function PropertyDetails() {
         <SectionCard
           title="Property Type"
         >
-          <p className="text-2xl font-bold">
+          <p className="text-2xl font-bold text-slate-900 dark:text-white">
             {property.propertyType}
           </p>
         </SectionCard>
@@ -191,7 +226,7 @@ export default function PropertyDetails() {
         <SectionCard
           title="Area"
         >
-          <p className="text-2xl font-bold">
+          <p className="text-2xl font-bold text-slate-900 dark:text-white">
             {property.area} sq.ft
           </p>
         </SectionCard>
@@ -203,7 +238,7 @@ export default function PropertyDetails() {
 
             <IndianRupee size={24} />
 
-            <span className="text-2xl font-bold">
+            <span className="text-2xl font-bold text-slate-900 dark:text-white">
               {property.price}
             </span>
 
@@ -215,7 +250,7 @@ export default function PropertyDetails() {
 
       <SectionCard title="Description">
 
-        <p className="leading-7 text-slate-600">
+        <p className="leading-7 text-slate-600 dark:text-slate-300">
           {property.description ||
             "No description available."}
         </p>
@@ -235,19 +270,19 @@ function Info({
     <div className="flex items-center gap-4">
 
       {icon && (
-        <div className="rounded-lg bg-slate-100 p-2">
+        <div className="rounded-lg bg-slate-100 dark:bg-slate-800 dark:text-slate-300 text-slate-600 p-2">
           {icon}
         </div>
       )}
 
       <div>
 
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           {label}
         </p>
 
-        <p className="font-semibold text-slate-900">
-          {value}
+        <p className="font-semibold text-slate-900 dark:text-white">
+          {value != null ? value : "N/A"}
         </p>
 
       </div>

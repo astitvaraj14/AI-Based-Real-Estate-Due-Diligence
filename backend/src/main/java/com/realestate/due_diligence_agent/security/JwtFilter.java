@@ -64,6 +64,10 @@ public class JwtFilter extends OncePerRequestFilter {
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
+            if (!user.isActive()) {
+                throw new RuntimeException("Account is suspended.");
+            }
+
             System.out.println("User Found: " + user.getEmail());
 
             List<GrantedAuthority> authorities = List.of(

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.realestate.due_diligence_agent.dto.DashboardResponse;
 import com.realestate.due_diligence_agent.dto.PropertySummaryResponse;
 import com.realestate.due_diligence_agent.entity.Property;
+import com.realestate.due_diligence_agent.entity.Role;
 import com.realestate.due_diligence_agent.entity.User;
 import com.realestate.due_diligence_agent.repository.PropertyRepository;
 
@@ -40,7 +41,7 @@ public class DashboardService {
 
         User user = getLoggedInUser();
 
-        List<Property> properties = propertyRepository.findByUser(user);
+        List<Property> properties = user.getRole() == Role.ADMIN ? propertyRepository.findAll() : propertyRepository.findByUser(user);
 
         long totalProperties = properties.size();
 

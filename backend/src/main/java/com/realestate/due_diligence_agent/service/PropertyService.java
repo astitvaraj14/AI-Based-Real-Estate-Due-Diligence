@@ -25,6 +25,7 @@ import com.realestate.due_diligence_agent.dto.PropertyRequest;
 import com.realestate.due_diligence_agent.dto.VerificationResult;
 import com.realestate.due_diligence_agent.dto.ZoningResponse;
 import com.realestate.due_diligence_agent.entity.Property;
+import com.realestate.due_diligence_agent.entity.Role;
 import com.realestate.due_diligence_agent.entity.User;
 import com.realestate.due_diligence_agent.repository.PropertyRepository;
 
@@ -83,7 +84,7 @@ EnvironmentalService environmentalService     ) {
     public Property addProperty(PropertyRequest request) {
 
         AddressValidationResponse validation
-                = addressValidationService.validateAddress(request.getAddress());
+                = addressValidationService.validateAddress(request.getAddress(), request.getCity(), request.getState());
 
         if (!validation.isValid()) {
             throw new BadRequestException(validation.getMessage());
@@ -101,6 +102,8 @@ EnvironmentalService environmentalService     ) {
         property.setPrice(request.getPrice());
         property.setArea(request.getArea());
         property.setOwnerName(request.getOwnerName());
+        property.setLatitude(validation.getLatitude());
+        property.setLongitude(validation.getLongitude());
 
         property.setUser(loggedInUser);
 
@@ -155,7 +158,7 @@ EnvironmentalService environmentalService     ) {
         Property property = propertyRepository.findById(propertyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
-        if (!property.getUser().getId().equals(loggedInUser.getId())) {
+        if (!property.getUser().getId().equals(loggedInUser.getId()) && loggedInUser.getRole() != Role.ADMIN) {
             throw new AccessDeniedException("Access denied");
         }
 
@@ -171,10 +174,44 @@ EnvironmentalService environmentalService     ) {
     }
 
     // ==========================================
+    // Update Property Status (Admin Only)
+    // ==========================================
+    @Transactional
+    public Property updatePropertyStatus(Long id, Map<String, Object> request) {
+        User user = getLoggedInUser();
+        if (user.getRole() != Role.ADMIN) {
+            throw new AccessDeniedException("Only Admins can manually update property status.");
+        }
+
+        Property property = propertyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
+
+        String status = (String) request.get("status");
+        Double score = null;
+        if (request.get("score") instanceof Integer) {
+            score = ((Integer) request.get("score")).doubleValue();
+        } else if (request.get("score") instanceof Double) {
+            score = (Double) request.get("score");
+        } else if (request.get("score") instanceof String) {
+            score = Double.parseDouble((String) request.get("score"));
+        }
+
+        if (status != null) property.setVerificationStatus(status);
+        if (score != null) property.setVerificationScore(score);
+        property.setVerificationDate(LocalDate.now());
+
+        return propertyRepository.save(property);
+    }
+
+    // ==========================================
     // Get All Properties
     // ==========================================
     public List<Property> getAllProperties() {
-        return propertyRepository.findByUser(getLoggedInUser());
+        User user = getLoggedInUser();
+        if (user.getRole() == Role.ADMIN) {
+            return propertyRepository.findAll();
+        }
+        return propertyRepository.findByUser(user);
     }
 
     // ==========================================
@@ -192,12 +229,16 @@ EnvironmentalService environmentalService     ) {
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
         System.out.println("Property ID       : " + property.getId());
-        System.out.println("Property Owner ID : " + property.getUser().getId());
-        System.out.println("Property Owner    : " + property.getUser().getEmail());
+        if (property.getUser() != null) {
+            System.out.println("Property Owner ID : " + property.getUser().getId());
+            System.out.println("Property Owner    : " + property.getUser().getEmail());
+        }
 
-        if (!property.getUser().getId().equals(user.getId())) {
-            System.out.println("ACCESS DENIED");
-            throw new AccessDeniedException("Access denied");
+        if (user.getRole() != Role.ADMIN) {
+            if (property.getUser() == null || !property.getUser().getId().equals(user.getId())) {
+                System.out.println("ACCESS DENIED");
+                throw new AccessDeniedException("Access denied");
+            }
         }
 
         System.out.println("ACCESS GRANTED");
@@ -213,11 +254,15 @@ EnvironmentalService environmentalService     ) {
 
         User user = getLoggedInUser();
 
-        Property property = propertyRepository.findByIdAndUser(id, user)
-                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
+        Property property;
+        if (user.getRole() == Role.ADMIN) {
+            property = propertyRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Property not found"));
+        } else {
+            property = propertyRepository.findByIdAndUser(id, user).orElseThrow(() -> new ResourceNotFoundException("Property not found"));
+        }
 
         AddressValidationResponse validation
-                = addressValidationService.validateAddress(request.getAddress());
+                = addressValidationService.validateAddress(request.getAddress(), request.getCity(), request.getState());
 
         if (!validation.isValid()) {
             throw new BadRequestException(validation.getMessage());
@@ -231,6 +276,11 @@ EnvironmentalService environmentalService     ) {
         property.setPrice(request.getPrice());
         property.setArea(request.getArea());
         property.setOwnerName(request.getOwnerName());
+        
+        if (validation.getLatitude() != null && validation.getLongitude() != null) {
+            property.setLatitude(validation.getLatitude());
+            property.setLongitude(validation.getLongitude());
+        }
 
         // A section is only touched when it is present in the request body.
         // When present, an existing child row is updated in place; only a
@@ -309,10 +359,14 @@ EnvironmentalService environmentalService     ) {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
-        System.out.println("Property Owner : " + property.getUser().getEmail());
+        if (property.getUser() != null) {
+            System.out.println("Property Owner : " + property.getUser().getEmail());
+        }
 
-        if (!property.getUser().getId().equals(user.getId())) {
-            throw new AccessDeniedException("Access denied");
+        if (user.getRole() != Role.ADMIN) {
+            if (property.getUser() == null || !property.getUser().getId().equals(user.getId())) {
+                throw new AccessDeniedException("Access denied");
+            }
         }
 
         propertyRepository.delete(property);
@@ -325,7 +379,9 @@ EnvironmentalService environmentalService     ) {
     // ==========================================
     public List<Property> getPropertiesByCity(String city) {
 
-        return propertyRepository.findByUser(getLoggedInUser())
+        User user = getLoggedInUser();
+        List<Property> properties = user.getRole() == Role.ADMIN ? propertyRepository.findAll() : propertyRepository.findByUser(user);
+        return properties
                 .stream()
                 .filter(property
                         -> property.getCity() != null
@@ -338,7 +394,9 @@ EnvironmentalService environmentalService     ) {
     // ==========================================
     public List<Property> getPropertiesByType(String propertyType) {
 
-        return propertyRepository.findByUser(getLoggedInUser())
+        User user = getLoggedInUser();
+        List<Property> properties = user.getRole() == Role.ADMIN ? propertyRepository.findAll() : propertyRepository.findByUser(user);
+        return properties
                 .stream()
                 .filter(property
                         -> property.getPropertyType() != null
@@ -352,7 +410,9 @@ EnvironmentalService environmentalService     ) {
     public List<Property> getPropertiesByPrice(Double minPrice,
             Double maxPrice) {
 
-        return propertyRepository.findByUser(getLoggedInUser())
+        User user = getLoggedInUser();
+        List<Property> properties = user.getRole() == Role.ADMIN ? propertyRepository.findAll() : propertyRepository.findByUser(user);
+        return properties
                 .stream()
                 .filter(property
                         -> property.getPrice() != null
@@ -366,7 +426,9 @@ EnvironmentalService environmentalService     ) {
     // ==========================================
     public Map<String, Long> getPropertyTypeStats() {
 
-        return propertyRepository.findByUser(getLoggedInUser())
+        User user = getLoggedInUser();
+        List<Property> properties = user.getRole() == Role.ADMIN ? propertyRepository.findAll() : propertyRepository.findByUser(user);
+        return properties
                 .stream()
                 .collect(Collectors.groupingBy(
                         Property::getPropertyType,
@@ -384,8 +446,10 @@ EnvironmentalService environmentalService     ) {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
-        if (!property.getUser().getId().equals(loggedInUser.getId())) {
-            throw new AccessDeniedException("Access denied");
+        if (loggedInUser.getRole() != Role.ADMIN) {
+            if (property.getUser() == null || !property.getUser().getId().equals(loggedInUser.getId())) {
+                throw new AccessDeniedException("Access denied");
+            }
         }
 
         // Every section below is read straight off the Property entity that

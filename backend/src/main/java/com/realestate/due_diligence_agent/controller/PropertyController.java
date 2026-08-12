@@ -38,6 +38,11 @@ public class PropertyController {
         return propertyService.verifyProperty(id);
     }
 
+    @PutMapping("/{id}/status")
+    public Property updatePropertyStatus(@PathVariable Long id, @RequestBody Map<String, Object> request) {
+        return propertyService.updatePropertyStatus(id, request);
+    }
+
     @GetMapping
     public List<Property> getAllProperties() {
         return propertyService.getAllProperties();

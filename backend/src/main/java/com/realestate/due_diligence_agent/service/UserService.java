@@ -24,6 +24,15 @@ import com.realestate.due_diligence_agent.exception.UnauthorizedException;
 import com.realestate.due_diligence_agent.repository.OtpRepository;
 import com.realestate.due_diligence_agent.repository.UserRepository;
 import com.realestate.due_diligence_agent.security.JwtService;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.realestate.due_diligence_agent.dto.GoogleAuthRequest;
+import com.realestate.due_diligence_agent.entity.Role;
+import org.springframework.beans.factory.annotation.Value;
+import java.util.Collections;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -33,6 +42,9 @@ public class UserService {
     private final JwtService jwtService;
     private final OtpRepository otpRepository;
     private final EmailService emailService;
+
+    @Value("${google.client.id}")
+    private String googleClientId;
 
     public UserService(UserRepository userRepository,
             PasswordEncoder passwordEncoder,
@@ -59,6 +71,7 @@ public class UserService {
         user.setEmail(request.getEmail().trim());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
+        user.setJoinedDate(java.time.LocalDate.now());
 
         return userRepository.save(user);
     }
@@ -79,6 +92,49 @@ public class UserService {
                 user.getEmail(),
                 user.getRole().name()
         );
+    }
+
+    public AuthResponse googleLogin(GoogleAuthRequest request) {
+        try {
+            NetHttpTransport transport = new NetHttpTransport();
+            JacksonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+                    .setAudience(Collections.singletonList(googleClientId))
+                    .build();
+
+            GoogleIdToken idToken = verifier.verify(request.getToken());
+            if (idToken != null) {
+                GoogleIdToken.Payload payload = idToken.getPayload();
+
+                String email = payload.getEmail();
+                String name = (String) payload.get("name");
+
+                User user = userRepository.findByEmail(email).orElse(null);
+
+                if (user == null) {
+                    user = new User();
+                    user.setEmail(email);
+                    user.setFullName(name);
+                    user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
+                    user.setRole(Role.BUYER); 
+                    user.setJoinedDate(java.time.LocalDate.now());
+                    user = userRepository.save(user);
+                }
+
+                String token = jwtService.generateToken(user.getEmail());
+
+                return new AuthResponse(
+                        token,
+                        user.getEmail(),
+                        user.getRole().name()
+                );
+            } else {
+                throw new UnauthorizedException("Invalid Google ID token.");
+            }
+        } catch (Exception e) {
+            throw new UnauthorizedException("Google authentication failed: " + e.getMessage());
+        }
     }
 
     public User getLoggedInUser() {
@@ -102,6 +158,9 @@ public class UserService {
 
         user.setFullName(request.getFullName().trim());
         user.setEmail(request.getEmail().trim());
+        if (request.getPhone() != null) {
+            user.setPhone(request.getPhone().trim());
+        }
 
         return userRepository.save(user);
     }

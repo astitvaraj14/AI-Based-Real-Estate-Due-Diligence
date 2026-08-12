@@ -22,6 +22,11 @@ import AddProperty from "./pages/properties/AddProperty";
 import AddressValidation from "./pages/AddressValidation";
 import Profile from "./pages/profile/Profile";
 import SettingsPage from "./pages/settings/Settings";
+import Reports from "./pages/Reports";
+import Documents from "./pages/Documents";
+import AiReport from "./pages/AiReport";
+import Compare from "./pages/Compare";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 // Layout
 import DashboardLayout from "./components/layouts/DashboardLayout";
@@ -114,6 +119,28 @@ function App() {
             element={<AddressValidation />}
           />
 
+          {/* Analytics & Reports */}
+
+          <Route
+            path="/reports"
+            element={<Reports />}
+          />
+
+          <Route
+            path="/documents"
+            element={<Documents />}
+          />
+
+          <Route
+            path="/documents/report"
+            element={<AiReport />}
+          />
+
+          <Route
+            path="/compare"
+            element={<Compare />}
+          />
+
           {/* Profile */}
 
           <Route
@@ -124,6 +151,12 @@ function App() {
 <Route
   path="/settings"
   element={<SettingsPage />}
+/>
+
+{/* Admin Routes */}
+<Route
+  path="/admin"
+  element={<AdminDashboard />}
 />
 
         </Route>

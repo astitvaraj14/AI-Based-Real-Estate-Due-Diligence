@@ -35,7 +35,9 @@ public class UserController {
                 user.getId(),
                 user.getFullName(),
                 user.getEmail(),
-                user.getRole().name()
+                user.getRole().name(),
+                user.getPhone(),
+                user.getJoinedDate()
         );
 
         return ResponseEntity.ok(response);
@@ -54,7 +56,9 @@ public class UserController {
                 updatedUser.getId(),
                 updatedUser.getFullName(),
                 updatedUser.getEmail(),
-                updatedUser.getRole().name()
+                updatedUser.getRole().name(),
+                updatedUser.getPhone(),
+                updatedUser.getJoinedDate()
         );
 
         return ResponseEntity.ok(response);

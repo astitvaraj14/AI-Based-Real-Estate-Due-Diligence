@@ -11,5 +11,7 @@ public class ProfileResponse {
     private String fullName;
     private String email;
     private String role;
+    private String phone;
+    private java.time.LocalDate joinedDate;
 
 }

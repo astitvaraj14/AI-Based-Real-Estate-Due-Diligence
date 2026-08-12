@@ -244,7 +244,13 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
                 risk.getPropertyId(),
                 risk.getTotalScore(),
                 risk.getRiskLevel(),
-                risk.getRecommendation()
+                risk.getRecommendation(),
+                risk.getLegalRisk(),
+                risk.getDocumentationRisk(),
+                risk.getCrimeRisk(),
+                risk.getEnvironmentalRisk(),
+                risk.getMarketRisk(),
+                risk.getInfrastructureRisk()
         );
     }
 
@@ -259,7 +265,13 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
                 risk.getPropertyId(),
                 risk.getTotalScore(),
                 risk.getRiskLevel(),
-                risk.getRecommendation()
+                risk.getRecommendation(),
+                risk.getLegalRisk(),
+                risk.getDocumentationRisk(),
+                risk.getCrimeRisk(),
+                risk.getEnvironmentalRisk(),
+                risk.getMarketRisk(),
+                risk.getInfrastructureRisk()
         );
     }
 }
