@@ -88,8 +88,13 @@ export default function AddProperty() {
       navigate("/properties");
     } catch (err) {
       console.error(err);
-
-      alert("Failed to save property.");
+      if (err.response && err.response.data && err.response.data.message) {
+        alert("Failed to save property: " + err.response.data.message);
+      } else if (err.response && err.response.data && err.response.data.error) {
+        alert("Failed to save property: " + err.response.data.error);
+      } else {
+        alert("Failed to save property. Please check if all required fields are filled and the address is valid.");
+      }
     } finally {
       setLoading(false);
     }
