@@ -98,7 +98,9 @@ public class AddressValidationService {
     public AddressValidationResponse recoverValidateAddress(Exception ex, String address, String city, String state) {
         log.warn("Address validation failed after retries for address '{}': {}", address, ex.getMessage());
         return new AddressValidationResponse(
-                false,
-                "Address validation service is currently unavailable. Please try again later.");
+                true,
+                "Address accepted (Validation service offline)",
+                null,
+                null);
     }
 }
