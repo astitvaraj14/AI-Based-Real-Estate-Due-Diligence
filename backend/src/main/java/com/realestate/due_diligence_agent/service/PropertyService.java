@@ -108,7 +108,7 @@ EnvironmentalService environmentalService     ) {
         property.setUser(loggedInUser);
 
         property.setVerificationStatus("Pending");
-        property.setVerificationScore(0.0);
+        property.setVerificationScore(null);
         property.setRegistrationDate(LocalDate.now());
         property.setVerificationDate(null);
 
