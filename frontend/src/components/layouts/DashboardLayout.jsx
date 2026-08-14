@@ -31,6 +31,9 @@ export default function DashboardLayout() {
         client.subscribe(`/topic/notifications/${user.id}`, (msg) => {
           if (msg.body) {
             const notification = JSON.parse(msg.body);
+            // Dispatch a custom event so the Header can update the red dot
+            window.dispatchEvent(new CustomEvent("new-notification", { detail: notification }));
+            
             toast(notification.message, {
               icon: '🔔',
               duration: 5000,

@@ -77,18 +77,16 @@ export default function Header() {
       ) {
         setOpen(false);
       }
+      if (
+        notifRef.current &&
+        !notifRef.current.contains(event.target)
+      ) {
+        setShowNotifications(false);
+      }
     }
 
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside
-    );
-
-    return () =>
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   async function fetchNotifications() {
@@ -104,6 +102,14 @@ export default function Header() {
     if (user || localStorage.getItem("token")) {
       fetchNotifications();
     }
+
+    // Listen for real-time notifications dispatched by DashboardLayout
+    const handleNewNotification = (e) => {
+      setNotifications((prev) => [e.detail, ...prev]);
+    };
+
+    window.addEventListener("new-notification", handleNewNotification);
+    return () => window.removeEventListener("new-notification", handleNewNotification);
   }, [user]);
 
   async function toggleNotifications() {
