@@ -8,5 +8,5 @@ import com.realestate.due_diligence_agent.entity.Environmental;
 
 public interface EnvironmentalRepository extends JpaRepository<Environmental, Long> {
 
-    Optional<Environmental> findByPropertyId(Long propertyId);
+    Optional<Environmental> findFirstByPropertyIdOrderByIdDesc(Long propertyId);
 }

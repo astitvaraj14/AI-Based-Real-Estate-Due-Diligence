@@ -10,6 +10,6 @@ import com.realestate.due_diligence_agent.entity.Ownership;
 @Repository
 public interface OwnershipRepository extends JpaRepository<Ownership, Long> {
 
-    Optional<Ownership> findByPropertyId(Long propertyId);
+    Optional<Ownership> findFirstByPropertyIdOrderByIdDesc(Long propertyId);
 
 }

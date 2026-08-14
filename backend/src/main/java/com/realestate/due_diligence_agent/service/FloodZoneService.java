@@ -84,7 +84,7 @@ public class FloodZoneService {
         propertyRepository.findById(propertyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
-        return floodZoneRepository.findByPropertyId(propertyId)
+        return floodZoneRepository.findFirstByPropertyIdOrderByIdDesc(propertyId)
                 .map(this::toResponse)
                 .orElse(null);
     }

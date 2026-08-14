@@ -10,6 +10,6 @@ import com.realestate.due_diligence_agent.entity.Zoning;
 @Repository
 public interface ZoningRepository extends JpaRepository<Zoning, Long> {
 
-    Optional<Zoning> findByPropertyId(Long propertyId);
+    Optional<Zoning> findFirstByPropertyIdOrderByIdDesc(Long propertyId);
 
 }

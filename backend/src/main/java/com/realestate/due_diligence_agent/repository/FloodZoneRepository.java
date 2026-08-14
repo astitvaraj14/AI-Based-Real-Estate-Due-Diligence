@@ -10,6 +10,6 @@ import com.realestate.due_diligence_agent.entity.FloodZone;
 @Repository
 public interface FloodZoneRepository extends JpaRepository<FloodZone, Long> {
 
-    Optional<FloodZone> findByPropertyId(Long propertyId);
+    Optional<FloodZone> findFirstByPropertyIdOrderByIdDesc(Long propertyId);
 
 }

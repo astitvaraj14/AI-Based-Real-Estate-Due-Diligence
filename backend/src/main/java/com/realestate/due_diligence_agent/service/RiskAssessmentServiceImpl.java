@@ -80,7 +80,7 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
             documentationRisk += 10;
         }
 
-        Optional<Permit> permitOpt = permitRepository.findByPropertyId(propertyId);
+        Optional<Permit> permitOpt = permitRepository.findFirstByPropertyIdOrderByIdDesc(propertyId);
         if (permitOpt.isEmpty()) {
             documentationRisk += 10;
             recommendations.add("Obtain construction permit.");
@@ -111,7 +111,7 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
         // ------------------------------------------------------------
         int legalRisk = 0;
 
-        Optional<LegalRecord> legalOpt = legalRecordRepository.findByPropertyId(propertyId);
+        Optional<LegalRecord> legalOpt = legalRecordRepository.findFirstByPropertyIdOrderByIdDesc(propertyId);
         if (legalOpt.isPresent()) {
             LegalRecord legalRecord = legalOpt.get();
             boolean hasCourtCases = "YES".equalsIgnoreCase(legalRecord.getCourtCases());
@@ -129,7 +129,7 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
             }
         }
 
-        Optional<Ownership> ownershipOpt = ownershipRepository.findByPropertyId(propertyId);
+        Optional<Ownership> ownershipOpt = ownershipRepository.findFirstByPropertyIdOrderByIdDesc(propertyId);
         if (ownershipOpt.isPresent() && !ownershipOpt.get().isOwnerVerified()) {
             legalRisk += 10;
             recommendations.add("Ownership verification is recommended.");
@@ -146,7 +146,7 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
         // ------------------------------------------------------------
         int crimeRisk = 0;
 
-        Optional<FloodZone> floodZoneOpt = floodZoneRepository.findByPropertyId(propertyId);
+        Optional<FloodZone> floodZoneOpt = floodZoneRepository.findFirstByPropertyIdOrderByIdDesc(propertyId);
         if (floodZoneOpt.isPresent()) {
             String floodRiskLevel = floodZoneOpt.get().getRiskLevel();
             if ("HIGH".equalsIgnoreCase(floodRiskLevel)) {
@@ -165,7 +165,7 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
         // ------------------------------------------------------------
         int environmentalRisk = 0;
 
-        Optional<Environmental> environmentalOpt = environmentalRepository.findByPropertyId(propertyId);
+        Optional<Environmental> environmentalOpt = environmentalRepository.findFirstByPropertyIdOrderByIdDesc(propertyId);
         if (environmentalOpt.isPresent()) {
             Environmental environmental = environmentalOpt.get();
             if ("HIGH".equalsIgnoreCase(environmental.getEnvironmentalRisk())) {
@@ -257,7 +257,7 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
     @Override
     public RiskAssessmentResponse getRiskAssessment(Long propertyId) {
 
-        RiskAssessment risk = repository.findByPropertyId(propertyId)
+        RiskAssessment risk = repository.findFirstByPropertyIdOrderByIdDesc(propertyId)
                 .orElseThrow(() ->
                         new RuntimeException("Risk Assessment Not Found"));
 

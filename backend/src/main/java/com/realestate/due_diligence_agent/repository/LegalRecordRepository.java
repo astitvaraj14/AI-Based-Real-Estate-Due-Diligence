@@ -10,6 +10,6 @@ import com.realestate.due_diligence_agent.entity.LegalRecord;
 @Repository
 public interface LegalRecordRepository extends JpaRepository<LegalRecord, Long> {
 
-    Optional<LegalRecord> findByPropertyId(Long propertyId);
+    Optional<LegalRecord> findFirstByPropertyIdOrderByIdDesc(Long propertyId);
 
 }

@@ -78,21 +78,21 @@ public class DueDiligenceReportServiceImpl implements DueDiligenceReportService 
         response.setPrice(property.getPrice());
 
         // Ownership
-        ownershipRepository.findByPropertyId(propertyId).ifPresent(ownership -> {
+        ownershipRepository.findFirstByPropertyIdOrderByIdDesc(propertyId).ifPresent(ownership -> {
             response.setOwnerVerified(ownership.isOwnerVerified());
             response.setOwnershipType(ownership.getOwnershipType());
             response.setOwnershipRemarks(ownership.getRemarks());
         });
 
         // Legal Record
-        legalRecordRepository.findByPropertyId(propertyId).ifPresent(legal -> {
+        legalRecordRepository.findFirstByPropertyIdOrderByIdDesc(propertyId).ifPresent(legal -> {
             response.setCourtCases(legal.getCourtCases());
             response.setCaseStatus(legal.getCaseStatus());
             response.setLegalRemarks(legal.getRemarks());
         });
 
         // Flood Zone
-        floodZoneRepository.findByPropertyId(propertyId).ifPresent(flood ->
+        floodZoneRepository.findFirstByPropertyIdOrderByIdDesc(propertyId).ifPresent(flood ->
                 response.setFloodRiskLevel(flood.getRiskLevel())
         );
 
@@ -107,13 +107,13 @@ public class DueDiligenceReportServiceImpl implements DueDiligenceReportService 
                         response.setLatestTaxStatus(latest.getPaymentStatus()));
 
         // Zoning
-        zoningRepository.findByPropertyId(propertyId).ifPresent(zoning -> {
+        zoningRepository.findFirstByPropertyIdOrderByIdDesc(propertyId).ifPresent(zoning -> {
             response.setZoneType(zoning.getZoneType());
             response.setConstructionAllowed(zoning.getConstructionAllowed());
         });
 
         // Risk Assessment
-        riskAssessmentRepository.findByPropertyId(propertyId).ifPresent(risk -> {
+        riskAssessmentRepository.findFirstByPropertyIdOrderByIdDesc(propertyId).ifPresent(risk -> {
             response.setTotalRiskScore(risk.getTotalScore());
             response.setRiskLevel(risk.getRiskLevel());
             response.setRecommendation(risk.getRecommendation());
