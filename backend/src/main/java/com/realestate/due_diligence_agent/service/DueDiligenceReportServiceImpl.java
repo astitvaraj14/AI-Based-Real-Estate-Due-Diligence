@@ -101,6 +101,7 @@ public class DueDiligenceReportServiceImpl implements DueDiligenceReportService 
                 propertyTaxHistoryRepository.findByPropertyId(propertyId);
 
         taxes.stream()
+                .filter(t -> t.getTaxYear() != null)
                 .max(Comparator.comparing(PropertyTaxHistory::getTaxYear))
                 .ifPresent(latest ->
                         response.setLatestTaxStatus(latest.getPaymentStatus()));

@@ -74,8 +74,7 @@ public class ExcelExportService {
                     report.getTotalRiskScore() == null ? "N/A" :
                             report.getTotalRiskScore().toString());
 
-            sheet.autoSizeColumn(0);
-            sheet.autoSizeColumn(1);
+            // Removed autoSizeColumn to prevent headless font exception in Alpine Docker
 
             workbook.write(outputStream);
 
