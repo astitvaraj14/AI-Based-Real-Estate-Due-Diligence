@@ -24,7 +24,8 @@ public class NotificationService {
         notification = notificationRepository.save(notification);
         
         // Broadcast the real-time notification
-        messagingTemplate.convertAndSend("/topic/notifications/" + userId, notification);
+        User user = userService.findById(userId);
+        messagingTemplate.convertAndSend("/topic/notifications/" + user.getEmail(), notification);
     }
 
     public List<Notification> getUserNotifications() {

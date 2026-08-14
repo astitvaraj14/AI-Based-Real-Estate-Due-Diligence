@@ -28,7 +28,7 @@ export default function DashboardLayout() {
       webSocketFactory: () => new SockJS(wsUrl),
       onConnect: () => {
         console.log("Connected to Real-time Notification Server");
-        client.subscribe(`/topic/notifications/${user.id}`, (msg) => {
+        client.subscribe(`/topic/notifications/${user.email}`, (msg) => {
           if (msg.body) {
             const notification = JSON.parse(msg.body);
             // Dispatch a custom event so the Header can update the red dot

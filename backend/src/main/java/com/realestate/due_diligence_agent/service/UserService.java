@@ -76,6 +76,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
