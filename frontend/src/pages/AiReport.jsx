@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { FaArrowLeft, FaPrint, FaDownload, FaRobot } from "react-icons/fa";
+import { FaArrowLeft, FaPrint, FaDownload, FaRobot, FaExclamationTriangle } from "react-icons/fa";
 import toast from "react-hot-toast";
 import remarkGfm from "remark-gfm";
 

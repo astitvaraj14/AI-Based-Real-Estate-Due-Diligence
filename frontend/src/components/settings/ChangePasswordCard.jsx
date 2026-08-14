@@ -68,7 +68,7 @@ export default function ChangePasswordCard() {
           name="currentPassword"
           value={form.currentPassword}
           onChange={handleChange}
-          className="w-full rounded-lg border border-slate-300 px-4 py-3"
+          className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-black dark:text-white px-4 py-3"
           required
         />
       </div>
@@ -83,7 +83,7 @@ export default function ChangePasswordCard() {
           name="newPassword"
           value={form.newPassword}
           onChange={handleChange}
-          className="w-full rounded-lg border border-slate-300 px-4 py-3"
+          className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-black dark:text-white px-4 py-3"
           required
         />
       </div>
@@ -98,7 +98,7 @@ export default function ChangePasswordCard() {
           name="confirmPassword"
           value={form.confirmPassword}
           onChange={handleChange}
-          className="w-full rounded-lg border border-slate-300 px-4 py-3"
+          className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-black dark:text-white px-4 py-3"
           required
         />
       </div>
