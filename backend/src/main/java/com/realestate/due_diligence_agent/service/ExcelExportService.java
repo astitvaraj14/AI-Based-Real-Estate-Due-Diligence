@@ -57,11 +57,11 @@ public class ExcelExportService {
 
             row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue("Price");
-            row.createCell(1).setCellValue(report.getPrice());
+            row.createCell(1).setCellValue(report.getPrice() != null ? String.valueOf(report.getPrice()) : "N/A");
 
             row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue("Area");
-            row.createCell(1).setCellValue(report.getArea());
+            row.createCell(1).setCellValue(report.getArea() != null ? String.valueOf(report.getArea()) : "N/A");
 
             row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue("Risk Level");
